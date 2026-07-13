@@ -7,4 +7,4 @@ simple-websocket==1.1.0
 click>=8.3.3
 httplib2>=0.32.0
 urllib3>=2.6.0
-idna>=3.15
+idna>=3.18
