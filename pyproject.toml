@@ -1,0 +1,25 @@
+[tool.black]
+line-length = 140
+target-version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | venv
+  | env
+  | instance
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 140
+skip = ["venv", "env", "instance", ".git"]

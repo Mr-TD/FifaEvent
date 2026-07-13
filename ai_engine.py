@@ -7,6 +7,7 @@ import random
 
 try:
     import google.generativeai as genai
+
     GENAI_AVAILABLE = True
 except ImportError:
     GENAI_AVAILABLE = False
@@ -30,7 +31,7 @@ Keep responses under 200 words unless the user asks for details.
 Always prioritize safety information when relevant.
 The tournament spans 16 venues across the United States, Mexico, and Canada from June 11 to July 19, 2026."""
 
-    def __init__(self, api_key=''):
+    def __init__(self, api_key=""):
         self.api_key = api_key
         self.model = None
         self.use_gemini = False
@@ -38,26 +39,23 @@ The tournament spans 16 venues across the United States, Mexico, and Canada from
         if api_key and GENAI_AVAILABLE:
             try:
                 genai.configure(api_key=api_key)
-                self.model = genai.GenerativeModel(
-                    'gemini-2.0-flash',
-                    system_instruction=self.SYSTEM_PROMPT
-                )
+                self.model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=self.SYSTEM_PROMPT)
                 self.use_gemini = True
             except Exception:
                 self.use_gemini = False
 
-    def chat(self, message, language='en', context=''):
+    def chat(self, message, language="en", context=""):
         """Conversational fan assistant."""
         if self.use_gemini:
             try:
                 prompt = f"User language: {language}\nContext: {context}\nUser: {message}"
                 response = self.model.generate_content(prompt)
                 return response.text
-            except Exception as e:
+            except Exception:
                 return self._mock_chat(message, language)
         return self._mock_chat(message, language)
 
-    def translate(self, text, source_lang='en', target_lang='es'):
+    def translate(self, text, source_lang="en", target_lang="es"):
         """Translate text between languages."""
         if self.use_gemini:
             try:
@@ -119,7 +117,7 @@ Provide step-by-step guidance that is clear, reassuring, and inclusive. Mention 
                 return self._mock_accessibility_guide(user_needs, destination)
         return self._mock_accessibility_guide(user_needs, destination)
 
-    def sustainability_tip(self, context='general'):
+    def sustainability_tip(self, context="general"):
         """Generate eco-friendly suggestions."""
         if self.use_gemini:
             try:
@@ -138,49 +136,49 @@ Keep it brief (2-3 sentences), positive, and motivating. Include a relevant emoj
         """Smart mock responses when Gemini is unavailable."""
         msg = message.lower()
 
-        if any(w in msg for w in ['food', 'eat', 'hungry', 'restaurant', 'drink']):
+        if any(w in msg for w in ["food", "eat", "hungry", "restaurant", "drink"]):
             return "🍔 Great question! Each stadium has multiple food zones. I recommend checking the **North Food Court** for international cuisine or the **South Plaza** for quick bites. Look for the 🟢 green markers on the stadium map for food locations. Vegetarian and halal options are available at most stalls!"
 
-        elif any(w in msg for w in ['restroom', 'bathroom', 'toilet', 'washroom']):
+        elif any(w in msg for w in ["restroom", "bathroom", "toilet", "washroom"]):
             return "🚻 Restrooms are located at every gate entrance and at each corner of every level. The nearest ones are usually at **Gates A, C, E, and G**. Accessible restrooms are marked with ♿ symbols. Check the stadium map for real-time availability!"
 
-        elif any(w in msg for w in ['exit', 'leave', 'gate', 'way out']):
+        elif any(w in msg for w in ["exit", "leave", "gate", "way out"]):
             return "🚪 Exit gates are located at all four cardinal points of the stadium. For the quickest exit, use the gate closest to your seating section. After the match, **Gates B and D** typically have the least congestion. Follow the illuminated exit signs!"
 
-        elif any(w in msg for w in ['medical', 'help', 'emergency', 'first aid', 'doctor']):
+        elif any(w in msg for w in ["medical", "help", "emergency", "first aid", "doctor"]):
             return "🏥 **Medical stations** are located at Gates A, D, and near Section 200. For emergencies, alert any staff member in a yellow vest or call the stadium emergency line. First aid kits are available at all information desks. Stay calm — help is always nearby!"
 
-        elif any(w in msg for w in ['schedule', 'match', 'game', 'when', 'time', 'today']):
+        elif any(w in msg for w in ["schedule", "match", "game", "when", "time", "today"]):
             return "⚽ Check the **Schedule** tab for today's matches! The FIFA World Cup 2026 features 104 matches across 16 venues from June 11 to July 19, 2026. You can filter by group, date, or venue. Want me to find a specific team's schedule?"
 
-        elif any(w in msg for w in ['parking', 'car', 'transport', 'bus', 'metro', 'train']):
+        elif any(w in msg for w in ["parking", "car", "transport", "bus", "metro", "train"]):
             return "🚗 **Transportation Tips:**\n- **Metro/Subway** is the fastest option — follow signs to the nearest station\n- **Bus shuttles** run every 10 minutes from downtown\n- **Parking** lots open 4 hours before kickoff\n- **Rideshare** drop-off zones are at Gates F and H\n\nWe recommend public transit to reduce congestion!"
 
-        elif any(w in msg for w in ['wheelchair', 'accessible', 'disability', 'blind', 'deaf']):
+        elif any(w in msg for w in ["wheelchair", "accessible", "disability", "blind", "deaf"]):
             return "♿ **Accessibility is our priority!** All FIFA World Cup 2026 venues are fully accessible:\n- Wheelchair-accessible seating in every section\n- Ramps and elevators at all levels\n- Audio description services available\n- Sign language interpreters at info desks\n- Sensory rooms for those who need a quiet break\n\nVisit the **Accessibility** page for personalized guidance!"
 
-        elif any(w in msg for w in ['hello', 'hi', 'hey', 'howdy', 'sup']):
+        elif any(w in msg for w in ["hello", "hi", "hey", "howdy", "sup"]):
             return "👋 Hello and welcome to **StadiumIQ**! I'm your AI assistant for the FIFA World Cup 2026. I can help you with:\n\n🗺️ Stadium navigation\n⚽ Match schedules\n🍔 Food & facilities\n♿ Accessibility\n🌍 Multilingual support\n🌱 Sustainability tips\n\nWhat can I help you with today?"
 
-        elif any(w in msg for w in ['thank', 'thanks', 'thx']):
+        elif any(w in msg for w in ["thank", "thanks", "thx"]):
             return "😊 You're welcome! Enjoy the FIFA World Cup 2026! If you need anything else, I'm always here. ⚽🎉"
 
         else:
-            return f"⚽ Thanks for your question! While I'm currently running in demo mode, here's what I can help with:\n\n🗺️ **Navigation** — \"Where is the nearest restroom?\"\n🍔 **Food** — \"What food options are available?\"\n📅 **Schedule** — \"What matches are today?\"\n🚗 **Transport** — \"How do I get to the stadium?\"\n♿ **Accessibility** — \"Wheelchair accessible routes\"\n\nTry asking one of these, or set up a **Gemini API key** in the `.env` file for full AI-powered responses!"
+            return '⚽ Thanks for your question! While I\'m currently running in demo mode, here\'s what I can help with:\n\n🗺️ **Navigation** — "Where is the nearest restroom?"\n🍔 **Food** — "What food options are available?"\n📅 **Schedule** — "What matches are today?"\n🚗 **Transport** — "How do I get to the stadium?"\n♿ **Accessibility** — "Wheelchair accessible routes"\n\nTry asking one of these, or set up a **Gemini API key** in the `.env` file for full AI-powered responses!'
 
     def _mock_translate(self, text, target_lang):
         translations = {
-            'es': f'[Traducción al español] {text}',
-            'fr': f'[Traduction en français] {text}',
-            'pt': f'[Tradução em português] {text}',
-            'ar': f'[ترجمة عربية] {text}',
-            'zh': f'[中文翻译] {text}',
-            'hi': f'[हिंदी अनुवाद] {text}',
-            'de': f'[Deutsche Übersetzung] {text}',
-            'ja': f'[日本語訳] {text}',
-            'ko': f'[한국어 번역] {text}',
+            "es": f"[Traducción al español] {text}",
+            "fr": f"[Traduction en français] {text}",
+            "pt": f"[Tradução em português] {text}",
+            "ar": f"[ترجمة عربية] {text}",
+            "zh": f"[中文翻译] {text}",
+            "hi": f"[हिंदी अनुवाद] {text}",
+            "de": f"[Deutsche Übersetzung] {text}",
+            "ja": f"[日本語訳] {text}",
+            "ko": f"[한국어 번역] {text}",
         }
-        return translations.get(target_lang, f'[Translation to {target_lang}] {text}')
+        return translations.get(target_lang, f"[Translation to {target_lang}] {text}")
 
     def _mock_match_preview(self, match_data):
         previews = [
@@ -191,8 +189,8 @@ Keep it brief (2-3 sentences), positive, and motivating. Include a relevant emoj
         return random.choice(previews)
 
     def _mock_crowd_recommendation(self, crowd_data):
-        density = crowd_data.get('overall_density', 50)
-        stadium = crowd_data.get('stadium_name', 'the stadium')
+        density = crowd_data.get("overall_density", 50)
+        stadium = crowd_data.get("stadium_name", "the stadium")
 
         if density > 85:
             return f"""🔴 **HIGH DENSITY ALERT — {stadium}**
