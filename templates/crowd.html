@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Crowd Intelligence{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><span class="text-gradient">Crowd</span> Intelligence</h1>
+        <p>Real-time crowd density monitoring with AI-powered operational recommendations</p>
+    </div>
+
+    <!-- Stadium Selector -->
+    <div style="max-width:500px;margin:0 auto var(--space-xl)">
+        <select class="stadium-selector" id="crowd-stadium-select">
+            {% for stadium in stadiums %}
+            <option value="{{ stadium.id }}">{{ stadium.name }} — {{ stadium.city }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Overall Density -->
+    <div class="overall-density-display glass-card" id="overall-density">
+        <div class="density-ring" id="density-ring">
+            <div style="display:flex;flex-direction:column;align-items:center">
+                <span class="density-value" id="density-value">—</span>
+                <span class="density-unit">% capacity</span>
+            </div>
+        </div>
+        <h3 style="font-family:var(--font-heading)">Overall Stadium Density</h3>
+        <p style="color:var(--text-muted);font-size:0.85rem" id="total-people">Calculating...</p>
+    </div>
+
+    <!-- Zone Cards -->
+    <div class="section-header">
+        <h2>Zone <span class="text-gradient">Breakdown</span></h2>
+    </div>
+    <div class="crowd-zones-grid" id="zones-grid">
+        <!-- Populated by JS -->
+    </div>
+
+    <!-- Charts -->
+    <div class="crowd-layout">
+        <div class="glass-card crowd-chart-card" id="density-chart-card">
+            <h3>📊 Density by Zone</h3>
+            <canvas id="density-bar-chart"></canvas>
+        </div>
+        <div class="glass-card crowd-chart-card" id="history-chart-card">
+            <h3>📈 Crowd Trend (Today)</h3>
+            <canvas id="history-line-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- AI Recommendations -->
+    <div class="glass-card ai-recommendations" id="ai-recs">
+        <h3>🤖 AI Operational Recommendations</h3>
+        <div class="ai-response" id="ai-rec-text">
+            <div class="spinner"></div>
+        </div>
+        <button class="btn btn-sm btn-secondary mt-1" id="refresh-recs-btn" onclick="loadRecommendations()">
+            <i data-lucide="refresh-cw" style="width:14px;height:14px"></i> Refresh
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/crowd-dashboard.js') }}"></script>
+{% endblock %}

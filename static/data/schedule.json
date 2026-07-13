@@ -1,0 +1,21 @@
+[
+  {"id":1,"team_a":"Mexico","team_b":"Canada","team_a_flag":"🇲🇽","team_b_flag":"🇨🇦","match_date":"2026-06-11T18:00:00","stadium_id":12,"stage":"Group Stage","group_name":"Group A","status":"completed","score_a":2,"score_b":1},
+  {"id":2,"team_a":"USA","team_b":"Argentina","team_a_flag":"🇺🇸","team_b_flag":"🇦🇷","match_date":"2026-06-11T21:00:00","stadium_id":2,"stage":"Group Stage","group_name":"Group A","status":"completed","score_a":1,"score_b":1},
+  {"id":3,"team_a":"Brazil","team_b":"Germany","team_a_flag":"🇧🇷","team_b_flag":"🇩🇪","match_date":"2026-06-12T15:00:00","stadium_id":1,"stage":"Group Stage","group_name":"Group B","status":"completed","score_a":3,"score_b":2},
+  {"id":4,"team_a":"France","team_b":"Japan","team_a_flag":"🇫🇷","team_b_flag":"🇯🇵","match_date":"2026-06-12T18:00:00","stadium_id":5,"stage":"Group Stage","group_name":"Group B","status":"completed","score_a":2,"score_b":0},
+  {"id":5,"team_a":"England","team_b":"South Korea","team_a_flag":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","team_b_flag":"🇰🇷","match_date":"2026-06-13T15:00:00","stadium_id":6,"stage":"Group Stage","group_name":"Group C","status":"completed","score_a":2,"score_b":1},
+  {"id":6,"team_a":"Spain","team_b":"Netherlands","team_a_flag":"🇪🇸","team_b_flag":"🇳🇱","match_date":"2026-06-13T18:00:00","stadium_id":3,"stage":"Group Stage","group_name":"Group C","status":"completed","score_a":1,"score_b":1},
+  {"id":7,"team_a":"Portugal","team_b":"Morocco","team_a_flag":"🇵🇹","team_b_flag":"🇲🇦","match_date":"2026-06-14T15:00:00","stadium_id":4,"stage":"Group Stage","group_name":"Group D","status":"completed","score_a":1,"score_b":2},
+  {"id":8,"team_a":"Italy","team_b":"Nigeria","team_a_flag":"🇮🇹","team_b_flag":"🇳🇬","match_date":"2026-06-14T18:00:00","stadium_id":9,"stage":"Group Stage","group_name":"Group D","status":"completed","score_a":2,"score_b":0},
+  {"id":9,"team_a":"Belgium","team_b":"Australia","team_a_flag":"🇧🇪","team_b_flag":"🇦🇺","match_date":"2026-06-15T15:00:00","stadium_id":10,"stage":"Group Stage","group_name":"Group E","status":"completed","score_a":3,"score_b":1},
+  {"id":10,"team_a":"Croatia","team_b":"Senegal","team_a_flag":"🇭🇷","team_b_flag":"🇸🇳","match_date":"2026-06-15T18:00:00","stadium_id":11,"stage":"Group Stage","group_name":"Group E","status":"completed","score_a":1,"score_b":0},
+  {"id":11,"team_a":"Uruguay","team_b":"Ghana","team_a_flag":"🇺🇾","team_b_flag":"🇬🇭","match_date":"2026-06-16T15:00:00","stadium_id":8,"stage":"Group Stage","group_name":"Group F","status":"completed","score_a":2,"score_b":2},
+  {"id":12,"team_a":"Colombia","team_b":"Saudi Arabia","team_a_flag":"🇨🇴","team_b_flag":"🇸🇦","match_date":"2026-06-16T18:00:00","stadium_id":7,"stage":"Group Stage","group_name":"Group F","status":"completed","score_a":3,"score_b":0},
+  {"id":13,"team_a":"Brazil","team_b":"England","team_a_flag":"🇧🇷","team_b_flag":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","match_date":"2026-07-05T18:00:00","stadium_id":3,"stage":"Quarter-Final","group_name":"","status":"scheduled","score_a":null,"score_b":null},
+  {"id":14,"team_a":"France","team_b":"Spain","team_a_flag":"🇫🇷","team_b_flag":"🇪🇸","match_date":"2026-07-05T21:00:00","stadium_id":2,"stage":"Quarter-Final","group_name":"","status":"scheduled","score_a":null,"score_b":null},
+  {"id":15,"team_a":"Argentina","team_b":"Morocco","team_a_flag":"🇦🇷","team_b_flag":"🇲🇦","match_date":"2026-07-06T18:00:00","stadium_id":4,"stage":"Quarter-Final","group_name":"","status":"scheduled","score_a":null,"score_b":null},
+  {"id":16,"team_a":"Germany","team_b":"Portugal","team_a_flag":"🇩🇪","team_b_flag":"🇵🇹","match_date":"2026-07-06T21:00:00","stadium_id":5,"stage":"Quarter-Final","group_name":"","status":"scheduled","score_a":null,"score_b":null},
+  {"id":17,"team_a":"TBD","team_b":"TBD","team_a_flag":"🏳️","team_b_flag":"🏳️","match_date":"2026-07-14T18:00:00","stadium_id":1,"stage":"Semi-Final","group_name":"","status":"scheduled","score_a":null,"score_b":null},
+  {"id":18,"team_a":"TBD","team_b":"TBD","team_a_flag":"🏳️","team_b_flag":"🏳️","match_date":"2026-07-15T18:00:00","stadium_id":3,"stage":"Semi-Final","group_name":"","status":"scheduled","score_a":null,"score_b":null},
+  {"id":19,"team_a":"TBD","team_b":"TBD","team_a_flag":"🏳️","team_b_flag":"🏳️","match_date":"2026-07-19T16:00:00","stadium_id":1,"stage":"Final","group_name":"","status":"scheduled","score_a":null,"score_b":null}
+]

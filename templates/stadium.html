@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Stadium Navigator{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><span class="text-gradient">Stadium</span> Navigator</h1>
+        <p>Explore all 16 FIFA World Cup 2026 venues with AI-powered navigation</p>
+    </div>
+
+    <!-- Stadium Selector -->
+    <div style="max-width:500px;margin:0 auto var(--space-xl)">
+        <select class="stadium-selector" id="stadium-selector">
+            {% for stadium in stadiums %}
+            <option value="{{ stadium.id }}" data-lat="{{ stadium.latitude }}" data-lng="{{ stadium.longitude }}">
+                {{ stadium.name }} — {{ stadium.city }}, {{ stadium.country }} ({{ '{:,}'.format(stadium.capacity) }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="stadium-layout">
+        <!-- Map -->
+        <div class="map-container glass-card" style="padding:0">
+            <div id="stadium-map"></div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="map-sidebar">
+            <!-- POI Filters -->
+            <div class="glass-card" id="poi-filters-card">
+                <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1rem;margin-bottom:var(--space-md)">
+                    <i data-lucide="filter" style="width:16px;height:16px"></i> Filter Points of Interest
+                </h3>
+                <div class="poi-filter-group" id="poi-filters">
+                    <button class="poi-filter active" data-category="all" id="filter-all">📍 All</button>
+                    <button class="poi-filter" data-category="food" id="filter-food">🍔 Food</button>
+                    <button class="poi-filter" data-category="restroom" id="filter-restroom">🚻 Restroom</button>
+                    <button class="poi-filter" data-category="exit" id="filter-exit">🚪 Exit</button>
+                    <button class="poi-filter" data-category="medical" id="filter-medical">🏥 Medical</button>
+                    <button class="poi-filter" data-category="merch" id="filter-merch">🛍️ Merch</button>
+                    <button class="poi-filter" data-category="accessibility" id="filter-access">♿ Accessible</button>
+                    <button class="poi-filter" data-category="info" id="filter-info">ℹ️ Info</button>
+                </div>
+            </div>
+
+            <!-- POI List -->
+            <div class="glass-card" id="poi-list-card">
+                <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1rem;margin-bottom:var(--space-md)">
+                    <i data-lucide="map-pin" style="width:16px;height:16px"></i> Nearby Points
+                </h3>
+                <div class="poi-list" id="poi-list">
+                    <p style="color:var(--text-muted);font-size:0.85rem">Select a stadium to see points of interest</p>
+                </div>
+            </div>
+
+            <!-- AI Navigation -->
+            <div class="glass-card" id="ai-nav-card">
+                <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1rem;margin-bottom:var(--space-md)">
+                    <i data-lucide="bot" style="width:16px;height:16px"></i> AI Navigator
+                </h3>
+                <div class="form-group">
+                    <label>Where do you want to go?</label>
+                    <input type="text" class="form-input" id="nav-destination" placeholder="e.g., nearest food court">
+                </div>
+                <button class="btn btn-primary btn-sm" id="nav-btn" onclick="getNavigation()" style="width:100%">
+                    <i data-lucide="navigation" style="width:14px;height:14px"></i> Get Directions
+                </button>
+                <div class="route-result" id="nav-result"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/stadium-map.js') }}"></script>
+{% endblock %}

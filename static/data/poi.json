@@ -1,0 +1,38 @@
+{
+  "1": [
+    {"id":1,"name":"Gate A — Main Entrance","category":"exit","latitude":40.8138,"longitude":-74.0752,"floor":"Ground","is_accessible":true,"icon":"door-open","description":"Primary entrance with ticket scanning and accessibility ramps."},
+    {"id":2,"name":"Gate B — North Entrance","category":"exit","latitude":40.8148,"longitude":-74.0742,"floor":"Ground","is_accessible":true,"icon":"door-open","description":"North side entrance, close to parking lots."},
+    {"id":3,"name":"Gate C — East Entrance","category":"exit","latitude":40.8128,"longitude":-74.0722,"floor":"Ground","is_accessible":true,"icon":"door-open","description":"East entrance near public transit stop."},
+    {"id":4,"name":"Gate D — South Entrance","category":"exit","latitude":40.8118,"longitude":-74.0742,"floor":"Ground","is_accessible":true,"icon":"door-open","description":"South entrance, quieter and less congested."},
+    {"id":5,"name":"North Food Court","category":"food","latitude":40.8143,"longitude":-74.0747,"floor":"Level 1","is_accessible":true,"icon":"utensils","description":"International cuisine: burgers, tacos, sushi, pizza. Halal and vegetarian options available."},
+    {"id":6,"name":"South Food Plaza","category":"food","latitude":40.8113,"longitude":-74.0747,"floor":"Ground","is_accessible":true,"icon":"utensils","description":"Quick bites: hot dogs, nachos, pretzels. Fast service for halftime rush."},
+    {"id":7,"name":"East Gourmet Lounge","category":"food","latitude":40.8128,"longitude":-74.0727,"floor":"Level 2","is_accessible":true,"icon":"wine","description":"Premium dining experience with craft beverages and gourmet options."},
+    {"id":8,"name":"West Drinks Bar","category":"food","latitude":40.8128,"longitude":-74.0757,"floor":"Level 1","is_accessible":true,"icon":"coffee","description":"Beverages, smoothies, and snacks. Family-friendly options."},
+    {"id":9,"name":"Restroom Block A","category":"restroom","latitude":40.8140,"longitude":-74.0755,"floor":"Ground","is_accessible":true,"icon":"bath","description":"Large restroom facility near Gate A. Includes accessible stalls and baby changing."},
+    {"id":10,"name":"Restroom Block B","category":"restroom","latitude":40.8145,"longitude":-74.0735,"floor":"Level 1","is_accessible":true,"icon":"bath","description":"Level 1 restrooms near North Stand."},
+    {"id":11,"name":"Restroom Block C","category":"restroom","latitude":40.8115,"longitude":-74.0730,"floor":"Ground","is_accessible":true,"icon":"bath","description":"South side restrooms with shorter queues."},
+    {"id":12,"name":"Medical Station — Central","category":"medical","latitude":40.8130,"longitude":-74.0740,"floor":"Ground","is_accessible":true,"icon":"heart-pulse","description":"Primary medical station with paramedics, first aid, and emergency equipment."},
+    {"id":13,"name":"Medical Station — North","category":"medical","latitude":40.8146,"longitude":-74.0740,"floor":"Level 1","is_accessible":true,"icon":"heart-pulse","description":"Secondary medical station on the north side."},
+    {"id":14,"name":"FIFA Fan Shop","category":"merch","latitude":40.8135,"longitude":-74.0760,"floor":"Ground","is_accessible":true,"icon":"shopping-bag","description":"Official FIFA World Cup 2026 merchandise, jerseys, and souvenirs."},
+    {"id":15,"name":"Team Merch Store","category":"merch","latitude":40.8120,"longitude":-74.0725,"floor":"Level 1","is_accessible":true,"icon":"shirt","description":"Team-specific merchandise and collectibles."},
+    {"id":16,"name":"Accessible Viewing Area — Section 100","category":"accessibility","latitude":40.8133,"longitude":-74.0745,"floor":"Ground","is_accessible":true,"icon":"accessibility","description":"Wheelchair-accessible seating with companion seats and clear sightlines."},
+    {"id":17,"name":"Sensory Room","category":"accessibility","latitude":40.8125,"longitude":-74.0755,"floor":"Level 1","is_accessible":true,"icon":"ear-off","description":"Quiet space for fans who need a sensory break. Sound-dampened with comfortable seating."},
+    {"id":18,"name":"Information Desk","category":"info","latitude":40.8136,"longitude":-74.0750,"floor":"Ground","is_accessible":true,"icon":"info","description":"Multilingual staff, maps, lost & found, and general assistance."},
+    {"id":19,"name":"Prayer Room","category":"other","latitude":40.8122,"longitude":-74.0750,"floor":"Level 1","is_accessible":true,"icon":"sparkles","description":"Multi-faith prayer and meditation room. Open throughout the event."},
+    {"id":20,"name":"Family Zone","category":"other","latitude":40.8140,"longitude":-74.0730,"floor":"Ground","is_accessible":true,"icon":"baby","description":"Family-friendly area with activities for children, nursing room, and stroller parking."}
+  ],
+  "default": [
+    {"id":1,"name":"Gate A — Main Entrance","category":"exit","latitude":0.002,"longitude":0.002,"floor":"Ground","is_accessible":true,"icon":"door-open","description":"Primary entrance with ticket scanning."},
+    {"id":2,"name":"Gate B — North","category":"exit","latitude":0.005,"longitude":0.0,"floor":"Ground","is_accessible":true,"icon":"door-open","description":"North entrance."},
+    {"id":3,"name":"Gate C — East","category":"exit","latitude":0.0,"longitude":0.005,"floor":"Ground","is_accessible":true,"icon":"door-open","description":"East entrance near transit."},
+    {"id":4,"name":"Gate D — South","category":"exit","latitude":-0.005,"longitude":0.0,"floor":"Ground","is_accessible":true,"icon":"door-open","description":"South entrance."},
+    {"id":5,"name":"Main Food Court","category":"food","latitude":0.003,"longitude":-0.002,"floor":"Level 1","is_accessible":true,"icon":"utensils","description":"International cuisine and quick bites."},
+    {"id":6,"name":"Quick Bites Stand","category":"food","latitude":-0.003,"longitude":0.003,"floor":"Ground","is_accessible":true,"icon":"utensils","description":"Fast food and snacks."},
+    {"id":7,"name":"Restroom Block A","category":"restroom","latitude":0.004,"longitude":-0.003,"floor":"Ground","is_accessible":true,"icon":"bath","description":"Main restroom facility."},
+    {"id":8,"name":"Restroom Block B","category":"restroom","latitude":-0.003,"longitude":-0.002,"floor":"Level 1","is_accessible":true,"icon":"bath","description":"Upper level restrooms."},
+    {"id":9,"name":"Medical Station","category":"medical","latitude":0.001,"longitude":-0.001,"floor":"Ground","is_accessible":true,"icon":"heart-pulse","description":"First aid and emergency services."},
+    {"id":10,"name":"FIFA Fan Shop","category":"merch","latitude":0.003,"longitude":0.003,"floor":"Ground","is_accessible":true,"icon":"shopping-bag","description":"Official merchandise."},
+    {"id":11,"name":"Accessible Seating","category":"accessibility","latitude":0.001,"longitude":0.002,"floor":"Ground","is_accessible":true,"icon":"accessibility","description":"Wheelchair-accessible viewing area."},
+    {"id":12,"name":"Information Desk","category":"info","latitude":0.002,"longitude":0.001,"floor":"Ground","is_accessible":true,"icon":"info","description":"Help desk and lost & found."}
+  ]
+}

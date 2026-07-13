@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1,
+    "name": "MetLife Stadium",
+    "city": "East Rutherford, NJ",
+    "country": "USA",
+    "capacity": 82500,
+    "latitude": 40.8128,
+    "longitude": -74.0742,
+    "description": "The crown jewel of FIFA World Cup 2026, hosting the Final. Located in the New York metropolitan area."
+  },
+  {
+    "id": 2,
+    "name": "SoFi Stadium",
+    "city": "Inglewood, CA",
+    "country": "USA",
+    "capacity": 70240,
+    "latitude": 33.9535,
+    "longitude": -118.3392,
+    "description": "A state-of-the-art venue in Los Angeles, featuring a translucent ETFE roof."
+  },
+  {
+    "id": 3,
+    "name": "AT&T Stadium",
+    "city": "Arlington, TX",
+    "country": "USA",
+    "capacity": 80000,
+    "latitude": 32.7473,
+    "longitude": -97.0945,
+    "description": "Home to the Dallas Cowboys, featuring the iconic retractable roof and massive video board."
+  },
+  {
+    "id": 4,
+    "name": "NRG Stadium",
+    "city": "Houston, TX",
+    "country": "USA",
+    "capacity": 72220,
+    "latitude": 29.6847,
+    "longitude": -95.4107,
+    "description": "Houston's premier sporting venue with a retractable roof and world-class facilities."
+  },
+  {
+    "id": 5,
+    "name": "Mercedes-Benz Stadium",
+    "city": "Atlanta, GA",
+    "country": "USA",
+    "capacity": 71000,
+    "latitude": 33.7554,
+    "longitude": -84.4010,
+    "description": "An architectural marvel with a unique retractable pinwheel roof design."
+  },
+  {
+    "id": 6,
+    "name": "Lumen Field",
+    "city": "Seattle, WA",
+    "country": "USA",
+    "capacity": 69000,
+    "latitude": 47.5952,
+    "longitude": -122.3316,
+    "description": "Known for its electric atmosphere and passionate fans in the Pacific Northwest."
+  },
+  {
+    "id": 7,
+    "name": "Levi's Stadium",
+    "city": "Santa Clara, CA",
+    "country": "USA",
+    "capacity": 68500,
+    "latitude": 37.4033,
+    "longitude": -121.9694,
+    "description": "The technology-forward home of the San Francisco 49ers in Silicon Valley."
+  },
+  {
+    "id": 8,
+    "name": "Lincoln Financial Field",
+    "city": "Philadelphia, PA",
+    "country": "USA",
+    "capacity": 69796,
+    "latitude": 39.9008,
+    "longitude": -75.1675,
+    "description": "Philadelphia's passionate sporting venue, rich in history and atmosphere."
+  },
+  {
+    "id": 9,
+    "name": "Hard Rock Stadium",
+    "city": "Miami Gardens, FL",
+    "country": "USA",
+    "capacity": 65326,
+    "latitude": 25.9580,
+    "longitude": -80.2389,
+    "description": "A tropical sporting paradise in South Florida with an innovative canopy structure."
+  },
+  {
+    "id": 10,
+    "name": "Arrowhead Stadium",
+    "city": "Kansas City, MO",
+    "country": "USA",
+    "capacity": 76416,
+    "latitude": 39.0489,
+    "longitude": -94.4839,
+    "description": "One of the loudest stadiums in the world, home to legendary Chiefs fans."
+  },
+  {
+    "id": 11,
+    "name": "Gillette Stadium",
+    "city": "Foxborough, MA",
+    "country": "USA",
+    "capacity": 65878,
+    "latitude": 42.0909,
+    "longitude": -71.2643,
+    "description": "New England's iconic venue steeped in championship tradition."
+  },
+  {
+    "id": 12,
+    "name": "Estadio Azteca",
+    "city": "Mexico City",
+    "country": "Mexico",
+    "capacity": 87523,
+    "latitude": 19.3029,
+    "longitude": -99.1505,
+    "description": "The legendary Azteca — the only stadium to host two FIFA World Cup Finals (1970, 1986). A true cathedral of football."
+  },
+  {
+    "id": 13,
+    "name": "Estadio BBVA",
+    "city": "Monterrey",
+    "country": "Mexico",
+    "capacity": 53500,
+    "latitude": 25.6659,
+    "longitude": -100.2446,
+    "description": "A modern gem in northern Mexico, known for its striking design against the Sierra Madre mountains."
+  },
+  {
+    "id": 14,
+    "name": "Estadio Akron",
+    "city": "Guadalajara",
+    "country": "Mexico",
+    "capacity": 49850,
+    "latitude": 20.6831,
+    "longitude": -103.4625,
+    "description": "Home of Chivas, featuring a unique volcanic rock-inspired exterior in Mexico's second-largest city."
+  },
+  {
+    "id": 15,
+    "name": "BMO Field",
+    "city": "Toronto",
+    "country": "Canada",
+    "capacity": 45736,
+    "latitude": 43.6332,
+    "longitude": -79.4186,
+    "description": "Canada's premier soccer-specific stadium, expanded for the World Cup on Toronto's waterfront."
+  },
+  {
+    "id": 16,
+    "name": "BC Place",
+    "city": "Vancouver",
+    "country": "Canada",
+    "capacity": 54500,
+    "latitude": 49.2768,
+    "longitude": -123.1118,
+    "description": "Vancouver's retractable roof stadium, set against the stunning backdrop of the North Shore Mountains."
+  }
+]

@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="pulse-dot"></span>
+                AI-Powered Stadium Experience
+            </div>
+
+            <h1>
+                Welcome to<br>
+                <span class="gradient-text">StadiumIQ</span>
+            </h1>
+
+            <p>
+                Your intelligent companion for the FIFA World Cup 2026™. Navigate stadiums, 
+                get AI-powered assistance in 12 languages, track matches, and experience 
+                the beautiful game like never before.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="/chatbot" class="btn btn-primary" id="cta-assistant">
+                    <i data-lucide="bot" style="width:18px;height:18px"></i>
+                    Ask AI Assistant
+                </a>
+                <a href="/stadium" class="btn btn-secondary" id="cta-stadium">
+                    <i data-lucide="map" style="width:18px;height:18px"></i>
+                    Explore Stadiums
+                </a>
+                <a href="/schedule" class="btn btn-gold" id="cta-schedule">
+                    <i data-lucide="calendar" style="width:18px;height:18px"></i>
+                    Match Schedule
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-bar">
+                <div class="stat-item" id="stat-venues">
+                    <div class="stat-number" data-target="{{ stats.venues }}">0</div>
+                    <div class="stat-label">Venues</div>
+                </div>
+                <div class="stat-item" id="stat-teams">
+                    <div class="stat-number" data-target="{{ stats.teams }}">0</div>
+                    <div class="stat-label">Teams</div>
+                </div>
+                <div class="stat-item" id="stat-matches">
+                    <div class="stat-number" data-target="{{ stats.matches }}">0</div>
+                    <div class="stat-label">Matches</div>
+                </div>
+                <div class="stat-item" id="stat-cities">
+                    <div class="stat-number" data-target="{{ stats.cities }}">0</div>
+                    <div class="stat-label">Host Cities</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Matches Ticker -->
+    {% if upcoming %}
+    <section class="match-ticker" id="ticker-section">
+        <div class="section-header">
+            <h2>Upcoming <span class="text-gradient">Matches</span></h2>
+            <p>Don't miss the action — here's what's coming up next</p>
+        </div>
+
+        <div class="ticker-scroll" id="match-ticker">
+            {% for match in upcoming %}
+            <div class="match-card glass-card" id="ticker-match-{{ match.id }}">
+                <div class="match-stage">{{ match.stage }}</div>
+                <div class="match-teams">
+                    <span class="flag">{{ match.team_a_flag }}</span>
+                    <span>{{ match.team_a }}</span>
+                    <span class="match-vs">VS</span>
+                    <span>{{ match.team_b }}</span>
+                    <span class="flag">{{ match.team_b_flag }}</span>
+                </div>
+                <div class="match-info">
+                    {{ match.match_date[:10] }}<br>
+                    {{ match.match_date[11:16] }} UTC
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Features Grid -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <h2>Powered by <span class="text-gradient">Generative AI</span></h2>
+            <p>Experience the FIFA World Cup 2026 with cutting-edge AI technology</p>
+        </div>
+
+        <div class="features-grid">
+            <!-- AI Assistant -->
+            <div class="glass-card feature-card fade-in" id="feature-ai">
+                <div class="feature-icon purple">🤖</div>
+                <h3>AI Stadium Assistant</h3>
+                <p>Ask anything about the stadium, matches, food, transport, or accessibility. Our GenAI assistant speaks 12+ languages and knows every corner of every venue.</p>
+                <a href="/chatbot" class="feature-link">
+                    Start Chatting <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+                </a>
+            </div>
+
+            <!-- Stadium Navigator -->
+            <div class="glass-card feature-card fade-in fade-in-delay-1" id="feature-map">
+                <div class="feature-icon cyan">🗺️</div>
+                <h3>Interactive Stadium Map</h3>
+                <p>Navigate all 16 venues with an interactive map. Find food, restrooms, medical stations, exits, and more with AI-powered route recommendations.</p>
+                <a href="/stadium" class="feature-link">
+                    Open Map <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+                </a>
+            </div>
+
+            <!-- Crowd Intelligence -->
+            <div class="glass-card feature-card fade-in fade-in-delay-2" id="feature-crowd">
+                <div class="feature-icon pink">📊</div>
+                <h3>Crowd Intelligence</h3>
+                <p>Real-time crowd density monitoring with AI-generated operational recommendations. Keep fans safe and optimize stadium flow.</p>
+                <a href="/crowd" class="feature-link">
+                    View Dashboard <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+                </a>
+            </div>
+
+            <!-- Schedule -->
+            <div class="glass-card feature-card fade-in fade-in-delay-3" id="feature-schedule">
+                <div class="feature-icon gold">📅</div>
+                <h3>Smart Match Schedule</h3>
+                <p>Complete match schedule with AI-generated previews. Filter by group, stage, or venue. Never miss a game with smart alerts.</p>
+                <a href="/schedule" class="feature-link">
+                    View Schedule <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+                </a>
+            </div>
+
+            <!-- Accessibility -->
+            <div class="glass-card feature-card fade-in fade-in-delay-4" id="feature-access">
+                <div class="feature-icon blue">♿</div>
+                <h3>Accessibility Concierge</h3>
+                <p>AI-powered accessible route finder, high-contrast mode, text-to-speech, and personalized guidance for fans with disabilities.</p>
+                <a href="/accessibility" class="feature-link">
+                    Explore Options <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+                </a>
+            </div>
+
+            <!-- Sustainability -->
+            <div class="glass-card feature-card fade-in fade-in-delay-5" id="feature-eco">
+                <div class="feature-icon orange">🌱</div>
+                <h3>Sustainability Tracker</h3>
+                <p>Track your eco-impact, earn green points, and get AI-generated tips to make your World Cup experience more sustainable.</p>
+                <a href="/sustainability" class="feature-link">
+                    Go Green <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Venue Showcase -->
+    <section class="features-section" id="venues-section">
+        <div class="section-header">
+            <h2>16 World-Class <span class="text-gradient">Venues</span></h2>
+            <p>Across the United States, Mexico, and Canada</p>
+        </div>
+
+        <div class="ticker-scroll" id="venue-ticker">
+            {% for stadium in stadiums[:8] %}
+            <div class="glass-card match-card" id="venue-{{ stadium.id }}">
+                <div class="match-stage">{{ stadium.country }}</div>
+                <div style="font-size:1.8rem;margin:8px 0">🏟️</div>
+                <div style="font-weight:700;font-size:0.9rem;text-align:center">{{ stadium.name }}</div>
+                <div class="match-info">
+                    {{ stadium.city }}<br>
+                    Capacity: {{ '{:,}'.format(stadium.capacity) }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Animated counter
+    function animateCounters() {
+        const counters = document.querySelectorAll('.stat-number');
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            const duration = 2000;
+            const start = performance.now();
+            
+            function update(now) {
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                counter.textContent = Math.floor(target * eased);
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        });
+    }
+
+    // Intersection Observer for animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in');
+                if (entry.target.classList.contains('stats-bar')) {
+                    animateCounters();
+                }
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.feature-card, .stats-bar').forEach(el => {
+        observer.observe(el);
+    });
+
+    // Start counter animation on load
+    setTimeout(animateCounters, 500);
+</script>
+{% endblock %}

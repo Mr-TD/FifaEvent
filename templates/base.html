@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="StadiumIQ — AI-Powered FIFA World Cup 2026 Stadium Experience. Navigate stadiums, get AI assistance, track matches, and more.">
+    <title>{% block title %}StadiumIQ{% endblock %} | FIFA World Cup 2026</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- App CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <!-- Animated Background Mesh -->
+    <div class="bg-mesh"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="/" class="navbar-brand" id="brand-link">
+                <div class="logo-icon">⚽</div>
+                <span class="brand-text">StadiumIQ</span>
+                <span class="brand-badge">FIFA 2026</span>
+            </a>
+
+            <button class="navbar-toggle" id="nav-toggle" aria-label="Toggle navigation">
+                <i data-lucide="menu"></i>
+            </button>
+
+            <ul class="navbar-nav" id="nav-menu">
+                <li><a href="/" class="{{ 'active' if request.endpoint == 'main.index' }}" id="nav-home">
+                    <i data-lucide="home" style="width:16px;height:16px"></i> Home
+                </a></li>
+                <li><a href="/chatbot" class="{{ 'active' if request.endpoint == 'chatbot.chatbot_page' }}" id="nav-assistant">
+                    <i data-lucide="bot" style="width:16px;height:16px"></i> AI Assistant
+                </a></li>
+                <li><a href="/stadium" class="{{ 'active' if request.endpoint == 'stadium.stadium_page' }}" id="nav-stadium">
+                    <i data-lucide="map" style="width:16px;height:16px"></i> Stadium
+                </a></li>
+                <li><a href="/schedule" class="{{ 'active' if request.endpoint == 'schedule.schedule_page' }}" id="nav-schedule">
+                    <i data-lucide="calendar" style="width:16px;height:16px"></i> Schedule
+                </a></li>
+                <li><a href="/crowd" class="{{ 'active' if request.endpoint == 'crowd.crowd_page' }}" id="nav-crowd">
+                    <i data-lucide="users" style="width:16px;height:16px"></i> Crowd
+                </a></li>
+                <li><a href="/accessibility" class="{{ 'active' if request.endpoint == 'accessibility.accessibility_page' }}" id="nav-access">
+                    <i data-lucide="accessibility" style="width:16px;height:16px"></i> Access
+                </a></li>
+                <li><a href="/sustainability" class="{{ 'active' if request.endpoint == 'sustainability.sustainability_page' }}" id="nav-eco">
+                    <i data-lucide="leaf" style="width:16px;height:16px"></i> Eco
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content" tabindex="-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/chatbot">AI Assistant</a>
+                <a href="/stadium">Stadium Map</a>
+                <a href="/schedule">Match Schedule</a>
+                <a href="/accessibility">Accessibility</a>
+                <a href="/sustainability">Sustainability</a>
+            </div>
+            <p>StadiumIQ — AI-Powered Stadium Experience for FIFA World Cup 2026™</p>
+            <div class="sustainability-badge">
+                <i data-lucide="leaf" style="width:14px;height:14px"></i>
+                Powered by 100% Renewable Energy
+            </div>
+        </div>
+    </footer>
+
+    <!-- Core JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+
+    <!-- Initialize Lucide Icons -->
+    <script>lucide.createIcons();</script>
+</body>
+</html>

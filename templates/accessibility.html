@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Accessibility{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><span class="text-gradient">Accessibility</span> Hub</h1>
+        <p>Every fan deserves an amazing World Cup experience. We're here to help.</p>
+    </div>
+
+    <!-- Quick Controls -->
+    <div class="access-controls" id="access-controls">
+        <button class="access-toggle" id="toggle-contrast" onclick="toggleHighContrast()">
+            <i data-lucide="contrast" style="width:18px;height:18px"></i> High Contrast
+        </button>
+        <button class="access-toggle" id="toggle-font" onclick="toggleLargeFont()">
+            <i data-lucide="a-large-small" style="width:18px;height:18px"></i> Large Text
+        </button>
+        <button class="access-toggle" id="toggle-speech" onclick="toggleSpeech()">
+            <i data-lucide="volume-2" style="width:18px;height:18px"></i> Text-to-Speech
+        </button>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="accessibility-grid">
+        <div class="glass-card access-feature-card fade-in" id="access-wheelchair">
+            <div class="access-icon">♿</div>
+            <h3>Wheelchair Access</h3>
+            <p>All 16 venues are fully wheelchair accessible with ramps, elevators, and dedicated seating areas with companion seats and clear sightlines.</p>
+        </div>
+
+        <div class="glass-card access-feature-card fade-in fade-in-delay-1" id="access-visual">
+            <div class="access-icon">👁️</div>
+            <h3>Visual Assistance</h3>
+            <p>Audio description services, high-contrast mode, screen reader compatibility, and Braille signage at all key locations.</p>
+        </div>
+
+        <div class="glass-card access-feature-card fade-in fade-in-delay-2" id="access-hearing">
+            <div class="access-icon">👂</div>
+            <h3>Hearing Support</h3>
+            <p>Hearing loop systems in all seating areas, sign language interpreters at information desks, and visual alert systems.</p>
+        </div>
+
+        <div class="glass-card access-feature-card fade-in fade-in-delay-3" id="access-sensory">
+            <div class="access-icon">🧠</div>
+            <h3>Sensory Rooms</h3>
+            <p>Quiet, sound-dampened spaces available at every venue for fans who need a sensory break from the excitement.</p>
+        </div>
+
+        <div class="glass-card access-feature-card fade-in fade-in-delay-4" id="access-service">
+            <div class="access-icon">🐕‍🦺</div>
+            <h3>Service Animals</h3>
+            <p>Service animals are welcome at all venues. Relief areas and water stations are available throughout each stadium.</p>
+        </div>
+
+        <div class="glass-card access-feature-card fade-in fade-in-delay-5" id="access-family">
+            <div class="access-icon">👨‍👩‍👧‍👦</div>
+            <h3>Family Services</h3>
+            <p>Nursing rooms, stroller parking, children's play areas, and family-friendly viewing sections at every venue.</p>
+        </div>
+    </div>
+
+    <!-- AI Route Finder -->
+    <div class="glass-card route-finder" id="route-finder">
+        <h3>🤖 AI Accessible Route Finder</h3>
+        <div class="form-group">
+            <label for="access-needs">Your Accessibility Needs</label>
+            <select class="form-select" id="access-needs">
+                <option value="wheelchair access">Wheelchair / Mobility Aid</option>
+                <option value="visual impairment, need audio guidance">Visual Impairment</option>
+                <option value="hearing impairment">Hearing Impairment</option>
+                <option value="sensory sensitivity, prefer quiet routes">Sensory Sensitivity</option>
+                <option value="elderly, need frequent rest stops">Elderly / Limited Mobility</option>
+                <option value="family with stroller and small children">Family with Young Children</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="access-destination">Where are you going?</label>
+            <input type="text" class="form-input" id="access-destination" placeholder="e.g., Section 200, food court, restroom">
+        </div>
+        <button class="btn btn-primary" id="find-route-btn" onclick="findAccessibleRoute()" style="width:100%">
+            <i data-lucide="navigation" style="width:16px;height:16px"></i> Find Accessible Route
+        </button>
+        <div class="route-result" id="access-route-result"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleHighContrast() {
+        document.body.classList.toggle('high-contrast');
+        document.getElementById('toggle-contrast').classList.toggle('active');
+    }
+
+    function toggleLargeFont() {
+        document.body.classList.toggle('large-font');
+        document.getElementById('toggle-font').classList.toggle('active');
+    }
+
+    let speechEnabled = false;
+    function toggleSpeech() {
+        speechEnabled = !speechEnabled;
+        document.getElementById('toggle-speech').classList.toggle('active');
+        if (speechEnabled) {
+            const text = document.querySelector('.main-content').innerText.substring(0, 500);
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            speechSynthesis.speak(utterance);
+        } else {
+            speechSynthesis.cancel();
+        }
+    }
+
+    async function findAccessibleRoute() {
+        const needs = document.getElementById('access-needs').value;
+        const destination = document.getElementById('access-destination').value || 'my seat';
+        const resultEl = document.getElementById('access-route-result');
+        const btn = document.getElementById('find-route-btn');
+
+        btn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px"></div> Finding route...';
+
+        try {
+            const response = await fetch('/api/accessibility/route', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ needs, destination })
+            });
+            const data = await response.json();
+            resultEl.textContent = data.guidance;
+            resultEl.classList.add('active');
+
+            if (speechEnabled) {
+                const utterance = new SpeechSynthesisUtterance(data.guidance);
+                utterance.rate = 0.85;
+                speechSynthesis.speak(utterance);
+            }
+        } catch (err) {
+            resultEl.textContent = 'Unable to find route. Please try again.';
+            resultEl.classList.add('active');
+        }
+
+        btn.innerHTML = '<i data-lucide="navigation" style="width:16px;height:16px"></i> Find Accessible Route';
+        lucide.createIcons();
+    }
+</script>
+{% endblock %}

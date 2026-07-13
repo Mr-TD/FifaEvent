@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Match Schedule{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><span class="text-gradient">Match</span> Schedule</h1>
+        <p>All FIFA World Cup 2026 matches with AI-generated previews</p>
+    </div>
+
+    <div class="schedule-container">
+        <!-- Filters -->
+        <div class="schedule-filters" id="schedule-filters">
+            <button class="filter-btn active" data-filter="all" id="sched-filter-all">All Matches</button>
+            <button class="filter-btn" data-filter="Group Stage" id="sched-filter-group">Group Stage</button>
+            <button class="filter-btn" data-filter="Quarter-Final" id="sched-filter-qf">Quarter-Finals</button>
+            <button class="filter-btn" data-filter="Semi-Final" id="sched-filter-sf">Semi-Finals</button>
+            <button class="filter-btn" data-filter="Final" id="sched-filter-final">Final</button>
+            <button class="filter-btn" data-filter="completed" id="sched-filter-completed">Completed</button>
+            <button class="filter-btn" data-filter="scheduled" id="sched-filter-upcoming">Upcoming</button>
+        </div>
+
+        <!-- Match Grid -->
+        <div class="schedule-grid" id="schedule-grid">
+            {% for match in matches %}
+            <div class="glass-card schedule-match-card fade-in" 
+                 data-stage="{{ match.stage }}" 
+                 data-status="{{ match.status }}"
+                 data-group="{{ match.group_name }}"
+                 id="match-card-{{ match.id }}">
+                
+                <div class="match-header">
+                    <span class="match-stage-badge">{{ match.stage }}{% if match.group_name %} · {{ match.group_name }}{% endif %}</span>
+                    <span class="match-status-badge {{ match.status }}">
+                        {% if match.status == 'live' %}
+                            🔴 LIVE
+                        {% elif match.status == 'completed' %}
+                            ✅ FT
+                        {% else %}
+                            🕐 Upcoming
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="match-teams-row">
+                    <div class="team-info">
+                        <span class="team-flag">{{ match.team_a_flag }}</span>
+                        <span class="team-name">{{ match.team_a }}</span>
+                    </div>
+                    <div class="match-center">
+                        {% if match.score_a is not none %}
+                            <span class="score-display">{{ match.score_a }} — {{ match.score_b }}</span>
+                        {% else %}
+                            <span class="vs-text">VS</span>
+                        {% endif %}
+                    </div>
+                    <div class="team-info">
+                        <span class="team-flag">{{ match.team_b_flag }}</span>
+                        <span class="team-name">{{ match.team_b }}</span>
+                    </div>
+                </div>
+
+                <div class="match-details">
+                    <div class="match-detail">
+                        <i data-lucide="map-pin" style="width:12px;height:12px"></i>
+                        {{ match.stadium_name }}
+                    </div>
+                    <div class="match-detail">
+                        <i data-lucide="calendar" style="width:12px;height:12px"></i>
+                        {{ match.match_date[:10] }} · {{ match.match_date[11:16] }} UTC
+                    </div>
+                </div>
+
+                <!-- AI Preview (loads on click) -->
+                <div class="match-preview-container" id="preview-{{ match.id }}">
+                    <div class="spinner" id="preview-spinner-{{ match.id }}"></div>
+                </div>
+
+                <button class="btn btn-sm btn-secondary mt-1" 
+                        onclick="loadPreview({{ match.id }})" 
+                        id="preview-btn-{{ match.id }}"
+                        style="width:100%;justify-content:center">
+                    <i data-lucide="sparkles" style="width:14px;height:14px"></i> AI Match Preview
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/schedule.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Sustainability{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><span class="text-gradient">Sustainability</span> Tracker</h1>
+        <p>Make your FIFA World Cup 2026 experience greener. Every action counts!</p>
+    </div>
+
+    <!-- Eco Score -->
+    <div class="glass-card eco-score-display" id="eco-score-card">
+        <div class="eco-level" id="eco-level">Getting Started 🌱</div>
+        <div class="eco-score-value" id="eco-score">0</div>
+        <div style="font-size:0.8rem;color:var(--text-muted)">Green Points</div>
+        <div class="eco-carbon" id="eco-carbon">0 kg CO₂ saved</div>
+    </div>
+
+    <!-- Eco Actions -->
+    <div class="section-header">
+        <h2>Log Your <span class="text-gradient">Green Actions</span></h2>
+        <p>Tap an action to log it and earn green points</p>
+    </div>
+
+    <div class="eco-actions-grid" id="eco-actions">
+        <button class="glass-card eco-action-btn" onclick="logAction('public_transit')" id="action-transit">
+            <span class="eco-emoji">🚌</span>
+            <div class="eco-action-name">Public Transit</div>
+            <div class="eco-action-impact">+10 pts · 4.5 kg CO₂</div>
+        </button>
+
+        <button class="glass-card eco-action-btn" onclick="logAction('carpooling')" id="action-carpool">
+            <span class="eco-emoji">🚗</span>
+            <div class="eco-action-name">Carpooling</div>
+            <div class="eco-action-impact">+8 pts · 3.0 kg CO₂</div>
+        </button>
+
+        <button class="glass-card eco-action-btn" onclick="logAction('reusable_bottle')" id="action-bottle">
+            <span class="eco-emoji">🥤</span>
+            <div class="eco-action-name">Reusable Bottle</div>
+            <div class="eco-action-impact">+5 pts · 0.5 kg CO₂</div>
+        </button>
+
+        <button class="glass-card eco-action-btn" onclick="logAction('local_food')" id="action-food">
+            <span class="eco-emoji">🍽️</span>
+            <div class="eco-action-name">Local Food</div>
+            <div class="eco-action-impact">+6 pts · 1.2 kg CO₂</div>
+        </button>
+
+        <button class="glass-card eco-action-btn" onclick="logAction('digital_ticket')" id="action-ticket">
+            <span class="eco-emoji">📱</span>
+            <div class="eco-action-name">Digital Ticket</div>
+            <div class="eco-action-impact">+4 pts · 0.1 kg CO₂</div>
+        </button>
+
+        <button class="glass-card eco-action-btn" onclick="logAction('recycling')" id="action-recycle">
+            <span class="eco-emoji">♻️</span>
+            <div class="eco-action-name">Recycling</div>
+            <div class="eco-action-impact">+3 pts · 0.3 kg CO₂</div>
+        </button>
+    </div>
+
+    <!-- AI Sustainability Tip -->
+    <div class="glass-card eco-tip-card" id="eco-tip-card">
+        <h3>🤖 AI Sustainability Tip</h3>
+        <div class="tip-text" id="tip-text">Loading tip...</div>
+        <button class="btn btn-sm btn-secondary mt-1" onclick="loadTip()" id="new-tip-btn">
+            <i data-lucide="refresh-cw" style="width:14px;height:14px"></i> New Tip
+        </button>
+    </div>
+
+    <!-- Stadium Sustainability Stats -->
+    <div class="section-header mt-3">
+        <h2>FIFA 2026 <span class="text-gradient">Green Goals</span></h2>
+    </div>
+
+    <div class="stats-bar" style="max-width:800px;margin:0 auto">
+        <div class="stat-item" id="stat-renewable">
+            <div class="stat-number" style="background:var(--gradient-cyan);-webkit-background-clip:text;-webkit-text-fill-color:transparent">100%</div>
+            <div class="stat-label">Renewable Energy</div>
+        </div>
+        <div class="stat-item" id="stat-recycle-rate">
+            <div class="stat-number" style="background:var(--gradient-cyan);-webkit-background-clip:text;-webkit-text-fill-color:transparent">90%</div>
+            <div class="stat-label">Waste Recycled</div>
+        </div>
+        <div class="stat-item" id="stat-water">
+            <div class="stat-number" style="background:var(--gradient-cyan);-webkit-background-clip:text;-webkit-text-fill-color:transparent">50%</div>
+            <div class="stat-label">Water Reduction</div>
+        </div>
+        <div class="stat-item" id="stat-carbon-neutral">
+            <div class="stat-number" style="background:var(--gradient-cyan);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Net 0</div>
+            <div class="stat-label">Carbon Target</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Load initial tip
+    async function loadTip() {
+        const tipEl = document.getElementById('tip-text');
+        tipEl.innerHTML = '<div class="spinner" style="margin:0 auto"></div>';
+        try {
+            const res = await fetch('/api/sustainability/tips');
+            const data = await res.json();
+            tipEl.textContent = data.tip;
+        } catch (err) {
+            tipEl.textContent = '🌱 Bring a reusable water bottle to the stadium! Every small action helps.';
+        }
+    }
+
+    async function logAction(actionType) {
+        try {
+            const res = await fetch('/api/sustainability/log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action_type: actionType })
+            });
+            const data = await res.json();
+
+            document.getElementById('eco-score').textContent = data.total_score;
+            document.getElementById('eco-carbon').textContent = `${data.total_carbon_saved} kg CO₂ saved`;
+            document.getElementById('eco-level').textContent =
+                data.total_score > 30 ? 'Eco Champion 🏆' :
+                (data.total_score > 15 ? 'Green Fan 🌿' : 'Getting Started 🌱');
+
+            // Flash effect
+            const scoreCard = document.getElementById('eco-score-card');
+            scoreCard.style.borderColor = 'var(--accent-cyan)';
+            setTimeout(() => { scoreCard.style.borderColor = ''; }, 1000);
+
+        } catch (err) {
+            console.error('Failed to log action:', err);
+        }
+    }
+
+    async function loadStats() {
+        try {
+            const res = await fetch('/api/sustainability/stats');
+            const data = await res.json();
+            document.getElementById('eco-score').textContent = data.total_score;
+            document.getElementById('eco-carbon').textContent = `${data.total_carbon_saved} kg CO₂ saved`;
+            document.getElementById('eco-level').textContent = data.level;
+        } catch (err) {}
+    }
+
+    // Initialize
+    loadTip();
+    loadStats();
+</script>
+{% endblock %}

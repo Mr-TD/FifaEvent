@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}AI Assistant{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><span class="text-gradient">AI Stadium</span> Assistant</h1>
+        <p>Ask me anything about the FIFA World Cup 2026 — stadiums, matches, food, transport, accessibility, and more!</p>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-window glass-card" id="chat-window" style="padding:0">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <div class="chat-avatar">🤖</div>
+                    <div class="chat-header-info">
+                        <h3>StadiumIQ Assistant</h3>
+                        <span><span class="online-dot"></span> Online — GenAI Powered</span>
+                    </div>
+                </div>
+                <select class="language-select" id="language-select">
+                    {% for code, name in languages.items() %}
+                    <option value="{{ code }}" {{ 'selected' if code == 'en' }}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message ai">
+                    <div class="message-avatar">🤖</div>
+                    <div>
+                        <div class="message-bubble">
+                            👋 Hello! I'm <strong>StadiumIQ</strong>, your AI assistant for the FIFA World Cup 2026.<br><br>
+                            I can help you with:<br>
+                            🗺️ Stadium navigation<br>
+                            ⚽ Match schedules & previews<br>
+                            🍔 Food & facilities<br>
+                            ♿ Accessibility<br>
+                            🌍 Multilingual support<br>
+                            🌱 Sustainability tips<br><br>
+                            What can I help you with today?
+                        </div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typing-indicator">
+                <div class="message-avatar" style="width:24px;height:24px;border-radius:6px;background:var(--gradient-hero);display:flex;align-items:center;justify-content:center;font-size:0.7rem">🤖</div>
+                <div class="typing-dots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <!-- Suggestions -->
+            <div class="chat-suggestions" id="chat-suggestions">
+                <button class="suggestion-btn" onclick="sendSuggestion('Where is the nearest restroom?')">🚻 Nearest restroom</button>
+                <button class="suggestion-btn" onclick="sendSuggestion('What food options are available?')">🍔 Food options</button>
+                <button class="suggestion-btn" onclick="sendSuggestion('What matches are today?')">📅 Today\'s matches</button>
+                <button class="suggestion-btn" onclick="sendSuggestion('How do I get to the stadium?')">🚗 Transportation</button>
+                <button class="suggestion-btn" onclick="sendSuggestion('Wheelchair accessible routes')">♿ Accessibility</button>
+                <button class="suggestion-btn" onclick="sendSuggestion('Where is the medical station?')">🏥 Medical help</button>
+                <button class="suggestion-btn" onclick="sendSuggestion('Give me a sustainability tip')">🌱 Eco tips</button>
+                <button class="suggestion-btn" onclick="sendSuggestion('Where can I buy merchandise?')">🛍️ Merchandise</button>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chat-input" 
+                       placeholder="Ask me anything about the World Cup..." 
+                       autocomplete="off">
+                <button class="chat-send-btn" id="chat-send-btn" onclick="sendMessage()">
+                    <i data-lucide="send" style="width:18px;height:18px"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}
