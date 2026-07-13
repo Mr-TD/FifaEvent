@@ -34,7 +34,7 @@
     <div class="bg-mesh"></div>
 
     <!-- Navigation -->
-    <nav class="navbar" id="navbar">
+    <nav class="navbar" id="navbar" role="navigation" aria-label="Main Navigation">
         <div class="navbar-inner">
             <a href="/" class="navbar-brand" id="brand-link">
                 <div class="logo-icon">⚽</div>
@@ -73,12 +73,12 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="main-content" id="main-content" tabindex="-1">
+    <main class="main-content" id="main-content" tabindex="-1" role="main">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer" role="contentinfo">
         <div class="footer-content">
             <div class="footer-links">
                 <a href="/">Home</a>

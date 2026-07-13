@@ -20,7 +20,7 @@
                         <span><span class="online-dot"></span> Online — GenAI Powered</span>
                     </div>
                 </div>
-                <select class="language-select" id="language-select">
+                <select class="language-select" id="language-select" aria-label="Select Chat Language">
                     {% for code, name in languages.items() %}
                     <option value="{{ code }}" {{ 'selected' if code == 'en' }}>{{ name }}</option>
                     {% endfor %}
@@ -72,8 +72,8 @@
             <div class="chat-input-area">
                 <input type="text" class="chat-input" id="chat-input" 
                        placeholder="Ask me anything about the World Cup..." 
-                       autocomplete="off">
-                <button class="chat-send-btn" id="chat-send-btn" onclick="sendMessage()">
+                       autocomplete="off" aria-label="Chat Message Input">
+                <button class="chat-send-btn" id="chat-send-btn" onclick="sendMessage()" aria-label="Send Message">
                     <i data-lucide="send" style="width:18px;height:18px"></i>
                 </button>
             </div>

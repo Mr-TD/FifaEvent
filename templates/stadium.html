@@ -11,7 +11,7 @@
 
     <!-- Stadium Selector -->
     <div style="max-width:500px;margin:0 auto var(--space-xl)">
-        <select class="stadium-selector" id="stadium-selector">
+        <select class="stadium-selector" id="stadium-selector" aria-label="Select Stadium">
             {% for stadium in stadiums %}
             <option value="{{ stadium.id }}" data-lat="{{ stadium.latitude }}" data-lng="{{ stadium.longitude }}">
                 {{ stadium.name }} — {{ stadium.city }}, {{ stadium.country }} ({{ '{:,}'.format(stadium.capacity) }})
@@ -62,7 +62,7 @@
                 </h3>
                 <div class="form-group">
                     <label>Where do you want to go?</label>
-                    <input type="text" class="form-input" id="nav-destination" placeholder="e.g., nearest food court">
+                    <input type="text" class="form-input" id="nav-destination" placeholder="e.g., nearest food court" aria-label="Navigation Destination">
                 </div>
                 <button class="btn btn-primary btn-sm" id="nav-btn" onclick="getNavigation()" style="width:100%">
                     <i data-lucide="navigation" style="width:14px;height:14px"></i> Get Directions

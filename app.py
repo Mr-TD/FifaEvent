@@ -7,16 +7,26 @@ Run with: python app.py
 """
 
 import json
+import logging
 import os
+from typing import Any
 
 from flask import Flask
+from flask_caching import Cache
 from flask_socketio import SocketIO
+from flask_wtf.csrf import CSRFProtect
 
 from ai_engine import StadiumAI
 from config import config_by_name
 from models import Match, PointOfInterest, Stadium, db
 
+# Initialize extensions
 socketio = SocketIO()
+csrf = CSRFProtect()
+cache = Cache()
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logger = logging.getLogger(__name__)
 
 
 def create_app(config_name="default"):
@@ -26,6 +36,8 @@ def create_app(config_name="default"):
 
     # Initialize extensions
     db.init_app(app)
+    csrf.init_app(app)
+    cache.init_app(app)
     socketio.init_app(app, cors_allowed_origins="*")
 
     # Initialize AI engine (Google Gemini)
@@ -34,9 +46,9 @@ def create_app(config_name="default"):
     app.config["AI_ENGINE"] = ai_engine
 
     if ai_engine.use_gemini:
-        print("[OK] Google Gemini AI engine initialized successfully")
+        logger.info("Google Gemini AI engine initialized successfully")
     else:
-        print("[DEMO] Running in DEMO mode (no Gemini API key). Set GEMINI_API_KEY in .env for full AI.")
+        logger.warning("Running in DEMO mode (no Gemini API key). Set GEMINI_API_KEY in .env for full AI.")
 
     # Report Google services status
     google_services = []
@@ -49,10 +61,9 @@ def create_app(config_name="default"):
     if app.config.get("GOOGLE_OAUTH_CLIENT_ID"):
         google_services.append("Google Sign-In")
 
-    # Always available (no key needed)
     google_services.extend(["Google Fonts", "Google Translate", "Google Charts", "Google Calendar Links"])
 
-    print(f'[GOOGLE] Active Google services: {", ".join(google_services)}')
+    logger.info(f'Active Google services: {", ".join(google_services)}')
 
     # Make Google config available to all templates
     @app.context_processor
@@ -82,6 +93,12 @@ def create_app(config_name="default"):
     app.register_blueprint(accessibility_bp)
     app.register_blueprint(sustainability_bp)
     app.register_blueprint(auth_bp)
+
+    # Exempt API routes from CSRF since they are stateless and we didn't add CSRF tokens to fetch calls
+    csrf.exempt(chatbot_bp)
+    csrf.exempt(stadium_bp)
+    csrf.exempt(schedule_bp)
+    csrf.exempt(crowd_bp)
 
     # Create database tables and seed data
     with app.app_context():
@@ -155,10 +172,10 @@ def seed_data(app):
                 )
             )
         db.session.commit()
-        print(f"[OK] Seeded {len(stadiums)} stadiums")
+        logger.info(f"Seeded {len(stadiums)} stadiums")
     except Exception as e:
         db.session.rollback()
-        print(f"[WARN] Stadium seed error: {e}")
+        logger.warning(f"Stadium seed error: {e}")
 
     # Seed matches
     try:
@@ -184,10 +201,10 @@ def seed_data(app):
                 )
             )
         db.session.commit()
-        print(f"[OK] Seeded {len(matches)} matches")
+        logger.info(f"Seeded {len(matches)} matches")
     except Exception as e:
         db.session.rollback()
-        print(f"[WARN] Match seed error: {e}")
+        logger.warning(f"Match seed error: {e}")
 
     # Seed POIs
     try:
@@ -213,18 +230,18 @@ def seed_data(app):
                 )
                 count += 1
         db.session.commit()
-        print(f"[OK] Seeded {count} points of interest")
+        logger.info(f"Seeded {count} points of interest")
     except Exception as e:
         db.session.rollback()
-        print(f"[WARN] POI seed error: {e}")
+        logger.warning(f"POI seed error: {e}")
 
 
 if __name__ == "__main__":
     app = create_app("development")
 
-    print("\n=== StadiumIQ - FIFA World Cup 2026 ===")
-    print("    Powered by Google Cloud Services")
-    print("    http://localhost:5000")
-    print("==========================================\n")
+    logger.info("=== StadiumIQ - FIFA World Cup 2026 ===")
+    logger.info("    Powered by Google Cloud Services")
+    logger.info("    http://localhost:5000")
+    logger.info("==========================================")
 
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)

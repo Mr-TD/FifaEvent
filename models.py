@@ -4,6 +4,7 @@ FIFA World Cup 2026
 """
 
 from datetime import datetime
+from typing import Any, Dict
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -16,7 +17,7 @@ class Stadium(db.Model):
     __tablename__ = "stadiums"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)
+    name = db.Column(db.String(200), nullable=False, index=True)
     city = db.Column(db.String(100), nullable=False)
     country = db.Column(db.String(50), nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
@@ -30,7 +31,7 @@ class Stadium(db.Model):
     pois = db.relationship("PointOfInterest", backref="stadium", lazy=True)
     crowd_snapshots = db.relationship("CrowdSnapshot", backref="stadium", lazy=True)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -54,15 +55,15 @@ class Match(db.Model):
     team_b = db.Column(db.String(100), nullable=False)
     team_a_flag = db.Column(db.String(10), default="🏳️")
     team_b_flag = db.Column(db.String(10), default="🏳️")
-    match_date = db.Column(db.DateTime, nullable=False)
-    stadium_id = db.Column(db.Integer, db.ForeignKey("stadiums.id"), nullable=False)
-    stage = db.Column(db.String(50), nullable=False)  # Group A, Round of 16, etc.
+    match_date = db.Column(db.DateTime, nullable=False, index=True)
+    stadium_id = db.Column(db.Integer, db.ForeignKey("stadiums.id"), nullable=False, index=True)
+    stage = db.Column(db.String(50), nullable=False, index=True)  # Group A, Round of 16, etc.
     group_name = db.Column(db.String(20), default="")
     score_a = db.Column(db.Integer, default=None, nullable=True)
     score_b = db.Column(db.Integer, default=None, nullable=True)
-    status = db.Column(db.String(20), default="scheduled")  # scheduled, live, completed
+    status = db.Column(db.String(20), default="scheduled", index=True)  # scheduled, live, completed
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "team_a": self.team_a,
@@ -86,9 +87,9 @@ class PointOfInterest(db.Model):
     __tablename__ = "points_of_interest"
 
     id = db.Column(db.Integer, primary_key=True)
-    stadium_id = db.Column(db.Integer, db.ForeignKey("stadiums.id"), nullable=False)
+    stadium_id = db.Column(db.Integer, db.ForeignKey("stadiums.id"), nullable=False, index=True)
     name = db.Column(db.String(200), nullable=False)
-    category = db.Column(db.String(50), nullable=False)  # food, restroom, exit, medical, merch, accessibility
+    category = db.Column(db.String(50), nullable=False, index=True)  # food, restroom, exit, medical, merch, accessibility
     description = db.Column(db.Text, default="")
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
@@ -96,7 +97,7 @@ class PointOfInterest(db.Model):
     is_accessible = db.Column(db.Boolean, default=True)
     icon = db.Column(db.String(50), default="map-pin")
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "stadium_id": self.stadium_id,
@@ -117,14 +118,14 @@ class CrowdSnapshot(db.Model):
     __tablename__ = "crowd_snapshots"
 
     id = db.Column(db.Integer, primary_key=True)
-    stadium_id = db.Column(db.Integer, db.ForeignKey("stadiums.id"), nullable=False)
+    stadium_id = db.Column(db.Integer, db.ForeignKey("stadiums.id"), nullable=False, index=True)
     zone = db.Column(db.String(50), nullable=False)  # North Stand, South Stand, East Gate, etc.
     density_level = db.Column(db.Integer, nullable=False)  # 0-100 percentage
     people_count = db.Column(db.Integer, default=0)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     alert_level = db.Column(db.String(20), default="normal")  # normal, warning, critical
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "stadium_id": self.stadium_id,
@@ -148,7 +149,7 @@ class ChatHistory(db.Model):
     language = db.Column(db.String(10), default="en")
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "session_id": self.session_id,
@@ -172,7 +173,7 @@ class SustainabilityAction(db.Model):
     carbon_saved_kg = db.Column(db.Float, default=0.0)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "session_id": self.session_id,
