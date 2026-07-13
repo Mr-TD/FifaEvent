@@ -3,8 +3,9 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Install dependencies
-COPY requirements.txt requirements.lock ./
-RUN pip install --no-cache-dir -r requirements.lock
+RUN pip install pipenv
+COPY Pipfile Pipfile.lock ./
+RUN pipenv install --system --deploy
 
 # Copy app files
 COPY . .
