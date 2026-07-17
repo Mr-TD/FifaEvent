@@ -3,27 +3,16 @@ StadiumIQ — Schedule Routes
 Match schedule and AI-generated previews
 """
 
-import json
-import os
-
 from flask import Blueprint, current_app, jsonify, render_template
 
+from utils import load_json
+
 schedule_bp = Blueprint("schedule", __name__)
-
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static", "data")
-
-
-def load_json(filename):
-    try:
-        with open(os.path.join(DATA_DIR, filename), "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return []
 
 
 @schedule_bp.route("/schedule")
 def schedule_page():
-    """Match schedule page."""
+    """Match schedule page with filters for groups and stages."""
     matches = load_json("schedule.json")
     stadiums = load_json("stadiums.json")
 
@@ -41,7 +30,11 @@ def schedule_page():
 
 @schedule_bp.route("/api/matches")
 def get_matches():
-    """Get all matches with optional filters."""
+    """Get all matches with stadium names.
+
+    Returns:
+        JSON with the complete list of matches.
+    """
     matches = load_json("schedule.json")
     stadiums = load_json("stadiums.json")
     stadium_map = {s["id"]: s["name"] for s in stadiums}
@@ -54,7 +47,14 @@ def get_matches():
 
 @schedule_bp.route("/api/match/<int:match_id>/preview")
 def match_preview(match_id):
-    """Get AI-generated match preview."""
+    """Get an AI-generated match preview.
+
+    Args:
+        match_id: The ID of the match to preview.
+
+    Returns:
+        JSON with match data and AI-generated preview text.
+    """
     matches = load_json("schedule.json")
     match = next((m for m in matches if m["id"] == match_id), None)
 

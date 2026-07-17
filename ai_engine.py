@@ -1,13 +1,23 @@
 """
 StadiumIQ — GenAI Engine
 Powered by Google Gemini API with smart fallback
+
+Provides AI-driven features for the FIFA World Cup 2026 stadium experience:
+- Conversational fan assistant (multilingual)
+- Real-time translation
+- Match previews
+- Crowd management recommendations
+- Accessibility navigation guidance
+- Sustainability tips
+- Transportation recommendations
+- Operational intelligence briefings
 """
 
 import hashlib
 import json
 import logging
 import random
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 try:
     import google.generativeai as genai
@@ -31,6 +41,7 @@ You help fans, staff, and organizers with:
 - Transportation and parking info
 - Crowd management recommendations (for staff)
 - Sustainability tips and eco-friendly actions
+- Operational intelligence and real-time decision support for venue staff
 
 You are friendly, concise, and helpful. Use emojis sparingly for warmth.
 Keep responses under 200 words unless the user asks for details.
@@ -50,29 +61,50 @@ The tournament spans 16 venues across the United States, Mexico, and Canada from
                 self.use_gemini = True
                 logger.info("GenAI model initialized successfully.")
             except Exception as e:
-                logger.error(f"Failed to initialize GenAI model: {e}")
+                logger.error("Failed to initialize GenAI model: %s", e)
                 self.use_gemini = False
 
     def _get_cache_key(self, prompt: str) -> str:
+        """Generate a deterministic cache key for a prompt string."""
         return hashlib.md5(prompt.encode("utf-8")).hexdigest()
 
     def chat(self, message: str, language: str = "en", context: str = "") -> str:
-        """Conversational fan assistant."""
+        """Conversational fan assistant.
+
+        Args:
+            message: The user's message text.
+            language: ISO language code for the response.
+            context: Optional additional context (e.g. current page).
+
+        Returns:
+            AI-generated response string.
+        """
         if self.use_gemini and self.model:
             try:
                 prompt = f"User language: {language}\nContext: {context}\nUser: {message}"
                 response = self.model.generate_content(prompt)
                 return response.text
             except Exception as e:
-                logger.error(f"Chat error: {e}")
+                logger.error("Chat error: %s", e)
                 return self._mock_chat(message, language)
         return self._mock_chat(message, language)
 
     def translate(self, text: str, source_lang: str = "en", target_lang: str = "es") -> str:
-        """Translate text between languages with caching."""
-        prompt = f"Translate the following text from {source_lang} to {target_lang}. Return ONLY the translation, nothing else.\n\nText: {text}"
+        """Translate text between languages with caching.
+
+        Args:
+            text: The text to translate.
+            source_lang: ISO code of the source language.
+            target_lang: ISO code of the target language.
+
+        Returns:
+            Translated text string.
+        """
+        prompt = (
+            f"Translate the following text from {source_lang} to {target_lang}. Return ONLY the translation, nothing else.\n\nText: {text}"
+        )
         cache_key = self._get_cache_key(prompt)
-        
+
         if cache_key in self.cache:
             return self.cache[cache_key]
 
@@ -82,12 +114,20 @@ The tournament spans 16 venues across the United States, Mexico, and Canada from
                 self.cache[cache_key] = response.text
                 return response.text
             except Exception as e:
-                logger.error(f"Translation error: {e}")
+                logger.error("Translation error: %s", e)
                 return self._mock_translate(text, target_lang)
         return self._mock_translate(text, target_lang)
 
     def generate_match_preview(self, match_data: Dict[str, Any]) -> str:
-        """Generate AI match preview."""
+        """Generate an AI match preview.
+
+        Args:
+            match_data: Dictionary with keys ``team_a``, ``team_b``,
+                        ``stage``, ``stadium_name``, and ``match_date``.
+
+        Returns:
+            Engaging match preview string.
+        """
         prompt = f"""Generate an exciting 2-3 sentence match preview for this FIFA World Cup 2026 game:
 {match_data.get('team_a')} vs {match_data.get('team_b')}
 Stage: {match_data.get('stage')}
@@ -96,7 +136,7 @@ Date: {match_data.get('match_date', 'TBD')}
 
 Make it engaging and informative. Include key storylines or rivalries if applicable."""
         cache_key = self._get_cache_key(prompt)
-        
+
         if cache_key in self.cache:
             return self.cache[cache_key]
 
@@ -106,12 +146,20 @@ Make it engaging and informative. Include key storylines or rivalries if applica
                 self.cache[cache_key] = response.text
                 return response.text
             except Exception as e:
-                logger.error(f"Match preview error: {e}")
+                logger.error("Match preview error: %s", e)
                 return self._mock_match_preview(match_data)
         return self._mock_match_preview(match_data)
 
     def crowd_recommendation(self, crowd_data: Dict[str, Any]) -> str:
-        """Generate operational recommendations based on crowd data using structured output."""
+        """Generate operational recommendations based on crowd data using structured output.
+
+        Args:
+            crowd_data: Dictionary with ``stadium_name``, ``zones``,
+                        ``overall_density``, and ``time``.
+
+        Returns:
+            Formatted recommendation string for operations staff.
+        """
         if self.use_gemini and self.model:
             try:
                 prompt = f"""As a crowd management AI for FIFA World Cup 2026, analyze this stadium crowd data and provide 3-4 actionable recommendations.
@@ -129,7 +177,7 @@ Time: {crowd_data.get('time', 'N/A')}
                     text_out = text_out[7:]
                 if text_out.endswith("```"):
                     text_out = text_out[:-3]
-                
+
                 try:
                     data = json.loads(text_out.strip())
                     recs = data.get("recommendations", [])
@@ -139,12 +187,20 @@ Time: {crowd_data.get('time', 'N/A')}
                     logger.warning("Failed to decode JSON from AI crowd recommendation.")
                     return response.text
             except Exception as e:
-                logger.error(f"Crowd recommendation error: {e}")
+                logger.error("Crowd recommendation error: %s", e)
                 return self._mock_crowd_recommendation(crowd_data)
         return self._mock_crowd_recommendation(crowd_data)
 
     def accessibility_guide(self, user_needs: str, destination: str) -> str:
-        """Personalized accessible route guidance."""
+        """Personalized accessible route guidance.
+
+        Args:
+            user_needs: Description of the user's accessibility requirements.
+            destination: The target location within the stadium.
+
+        Returns:
+            Step-by-step accessible navigation guidance.
+        """
         if self.use_gemini and self.model:
             try:
                 prompt = f"""Provide accessible navigation guidance for a FIFA World Cup 2026 stadium visitor:
@@ -156,12 +212,19 @@ Provide step-by-step guidance that is clear, reassuring, and inclusive. Mention 
                 response = self.model.generate_content(prompt)
                 return response.text
             except Exception as e:
-                logger.error(f"Accessibility guide error: {e}")
+                logger.error("Accessibility guide error: %s", e)
                 return self._mock_accessibility_guide(user_needs, destination)
         return self._mock_accessibility_guide(user_needs, destination)
 
     def sustainability_tip(self, context: str = "general") -> str:
-        """Generate eco-friendly suggestions."""
+        """Generate eco-friendly suggestions.
+
+        Args:
+            context: Situational context (e.g. ``arriving``, ``in-stadium``, ``departing``).
+
+        Returns:
+            Actionable sustainability tip string.
+        """
         prompt = f"""Give one specific, actionable sustainability tip for a fan attending the FIFA World Cup 2026.
 Context: {context}
 Keep it brief (2-3 sentences), positive, and motivating. Include a relevant emoji."""
@@ -175,9 +238,82 @@ Keep it brief (2-3 sentences), positive, and motivating. Include a relevant emoj
                 self.cache[cache_key] = response.text
                 return response.text
             except Exception as e:
-                logger.error(f"Sustainability tip error: {e}")
+                logger.error("Sustainability tip error: %s", e)
                 return self._mock_sustainability_tip()
         return self._mock_sustainability_tip()
+
+    def transportation_recommendation(self, transport_data: Dict[str, Any]) -> str:
+        """Generate AI-powered transportation recommendation.
+
+        Considers the stadium location, time of day, and user preference
+        (fastest, cheapest, eco-friendly) to suggest optimal transit.
+
+        Args:
+            transport_data: Dictionary with ``stadium_name``, ``city``,
+                            ``time_of_day``, and ``preference``.
+
+        Returns:
+            Personalized transportation recommendation string.
+        """
+        prompt = f"""As a transportation advisor for FIFA World Cup 2026, recommend the best way to get to the stadium.
+
+Stadium: {transport_data.get('stadium_name', 'Unknown')}
+City: {transport_data.get('city', 'Unknown')}
+Time: {transport_data.get('time_of_day', 'afternoon')}
+User priority: {transport_data.get('preference', 'balanced')}
+
+Provide a clear, actionable recommendation (3-4 sentences). Include specific transit options, estimated time, and a sustainability note. Format key points in bold."""
+        cache_key = self._get_cache_key(prompt)
+        if cache_key in self.cache:
+            return self.cache[cache_key]
+
+        if self.use_gemini and self.model:
+            try:
+                response = self.model.generate_content(prompt)
+                self.cache[cache_key] = response.text
+                return response.text
+            except Exception as e:
+                logger.error("Transportation recommendation error: %s", e)
+                return self._mock_transportation_recommendation(transport_data)
+        return self._mock_transportation_recommendation(transport_data)
+
+    def ops_briefing(self, context: Dict[str, Any]) -> str:
+        """Generate an operational intelligence briefing for venue staff.
+
+        Produces a structured situation report with actionable recommendations
+        tailored to the staff member's role.
+
+        Args:
+            context: Dictionary with ``stadium_name``, ``overall_density``,
+                     ``zones``, ``role``, ``active_staff``, ``active_volunteers``,
+                     ``weather``, and ``upcoming_matches``.
+
+        Returns:
+            Formatted operational briefing string.
+        """
+        if self.use_gemini and self.model:
+            try:
+                prompt = f"""You are an operational intelligence AI for FIFA World Cup 2026. Generate a concise operational briefing for a venue {context.get('role', 'manager')}.
+
+Stadium: {context.get('stadium_name', 'Unknown')}
+Current crowd density: {context.get('overall_density', 0)}%
+Zone breakdown: {context.get('zones', [])}
+Active staff: {context.get('active_staff', 0)}
+Active volunteers: {context.get('active_volunteers', 0)}
+Weather: {context.get('weather', 'N/A')}
+Upcoming matches: {context.get('upcoming_matches', [])}
+
+Provide:
+1. A status summary (use 🔴🟡🟢 indicators)
+2. 3-4 priority actions
+3. Resource allocation suggestion
+Keep it professional and actionable. Use markdown bold for emphasis."""
+                response = self.model.generate_content(prompt)
+                return response.text
+            except Exception as e:
+                logger.error("Ops briefing error: %s", e)
+                return self._mock_ops_briefing(context)
+        return self._mock_ops_briefing(context)
 
     # ─── Mock/Fallback Responses ──────────────────────────────────────
 
@@ -216,6 +352,7 @@ Keep it brief (2-3 sentences), positive, and motivating. Include a relevant emoj
             return '⚽ Thanks for your question! While I\'m currently running in demo mode, here\'s what I can help with:\n\n🗺️ **Navigation** — "Where is the nearest restroom?"\n🍔 **Food** — "What food options are available?"\n📅 **Schedule** — "What matches are today?"\n🚗 **Transport** — "How do I get to the stadium?"\n♿ **Accessibility** — "Wheelchair accessible routes"\n\nTry asking one of these, or set up a **Gemini API key** in the `.env` file for full AI-powered responses!'
 
     def _mock_translate(self, text: str, target_lang: str) -> str:
+        """Fallback translation with language-specific prefixes."""
         translations = {
             "es": f"[Traducción al español] {text}",
             "fr": f"[Traduction en français] {text}",
@@ -230,6 +367,7 @@ Keep it brief (2-3 sentences), positive, and motivating. Include a relevant emoj
         return translations.get(target_lang, f"[Translation to {target_lang}] {text}")
 
     def _mock_match_preview(self, match_data: Dict[str, Any]) -> str:
+        """Fallback match preview generator."""
         previews = [
             f"⚽ An electrifying clash awaits as **{match_data.get('team_a')}** face off against **{match_data.get('team_b')}** in the {match_data.get('stage')}! Both teams have shown incredible form, and this promises to be a match that fans will remember for years. Expect high intensity from kickoff!",
             f"🔥 **{match_data.get('team_a')}** vs **{match_data.get('team_b')}** — a fixture that needs no introduction! With pride and progression on the line in the {match_data.get('stage')}, both squads will leave everything on the pitch. This is the beautiful game at finest!",
@@ -238,6 +376,7 @@ Keep it brief (2-3 sentences), positive, and motivating. Include a relevant emoj
         return random.choice(previews)
 
     def _mock_crowd_recommendation(self, crowd_data: Dict[str, Any]) -> str:
+        """Fallback crowd management recommendation."""
         density = crowd_data.get("overall_density", 50)
         stadium = crowd_data.get("stadium_name", "the stadium")
 
@@ -267,6 +406,7 @@ Keep it brief (2-3 sentences), positive, and motivating. Include a relevant emoj
 4. **Prepare for surge** — Pre-match rush expected in approximately 45 minutes"""
 
     def _mock_accessibility_guide(self, user_needs: str, destination: str) -> str:
+        """Fallback accessible navigation guidance."""
         return f"""♿ **Accessible Route to {destination}**
 
 Based on your needs ({user_needs}), here's your personalized route:
@@ -283,6 +423,7 @@ Based on your needs ({user_needs}), here's your personalized route:
 All FIFA World Cup 2026 venues meet the highest accessibility standards. Enjoy the match! 🎉"""
 
     def _mock_sustainability_tip(self) -> str:
+        """Fallback sustainability tip generator."""
         tips = [
             "🌱 **Bring a reusable water bottle!** All FIFA World Cup 2026 stadiums have free water refill stations. You'll save an average of 3 plastic bottles per visit — that's a real impact when multiplied by millions of fans!",
             "🚌 **Take public transit to the stadium!** Each fan who uses the metro instead of driving saves approximately 4.5 kg of CO₂ emissions per trip. Plus, you'll avoid parking stress!",
@@ -292,3 +433,59 @@ All FIFA World Cup 2026 venues meet the highest accessibility standards. Enjoy t
             "💡 **Did you know?** FIFA World Cup 2026 stadiums use 100% renewable energy. By attending, you're supporting one of the most sustainable sporting events ever. Spread the word! ⚡",
         ]
         return random.choice(tips)
+
+    def _mock_transportation_recommendation(self, transport_data: Dict[str, Any]) -> str:
+        """Fallback transportation recommendation."""
+        stadium = transport_data.get("stadium_name", "the stadium")
+        city = transport_data.get("city", "the city")
+        preference = transport_data.get("preference", "balanced")
+        time_of_day = transport_data.get("time_of_day", "afternoon")
+
+        if preference == "eco-friendly":
+            return f"🌱 For **{stadium}** in {city}, we strongly recommend the **FIFA Fan Shuttle** or **metro/rail**. During {time_of_day} hours, public transit runs every 8-10 minutes and produces 90% fewer emissions than private cars. Your eco-conscious choice helps FIFA 2026 meet its carbon-neutral goal!"
+        elif preference == "fastest":
+            return f"⚡ To reach **{stadium}** in {city} fastest during {time_of_day} hours, take the **metro/rail direct service** — it avoids road congestion entirely. Estimated journey: 25-35 minutes from city center. If driving, use the **express lane** (Lot A, Gate D) and pre-book parking to skip the queue."
+        elif preference == "cheapest":
+            return f"💰 The most affordable way to **{stadium}** in {city}: the **FIFA Fan Shuttle** is free with your match ticket! It departs from the city center every 10 minutes during {time_of_day} hours. Public metro is also budget-friendly at ~$2-3 per trip. Avoid rideshare surge pricing near kickoff."
+        else:
+            return f"🚗 **Getting to {stadium} in {city}** ({time_of_day}):\n\n🚇 **Best option:** Metro/rail — fast, affordable, and eco-friendly\n🚌 **Free FIFA Fan Shuttle** — runs every 10 min from downtown\n🅿️ **Parking** — pre-book online to save $20+ vs. walk-up rates\n\n💡 **Tip:** Leave 90 minutes before kickoff to enjoy the Fan Festival outside the stadium!"
+
+    def _mock_ops_briefing(self, context: Dict[str, Any]) -> str:
+        """Fallback operational intelligence briefing."""
+        density = context.get("overall_density", 50)
+        stadium = context.get("stadium_name", "the stadium")
+        staff = context.get("active_staff", 0)
+        volunteers = context.get("active_volunteers", 0)
+
+        if density > 80:
+            alert = "🔴 HIGH DENSITY"
+            action = "Activate overflow protocols. Deploy additional staff to high-density zones."
+        elif density > 55:
+            alert = "🟡 MODERATE DENSITY"
+            action = "Pre-position staff at key transition points. Monitor gate throughput."
+        else:
+            alert = "🟢 NORMAL OPERATIONS"
+            action = "Maintain standard staffing. Good window for maintenance rotations."
+
+        upcoming_lines = []
+        for m in context.get("upcoming_matches", [])[:3]:
+            upcoming_lines.append(f"- {m.get('team_a', 'TBD')} vs {m.get('team_b', 'TBD')} ({m.get('stage', '')})")
+
+        upcoming_text = "\n".join(upcoming_lines) if upcoming_lines else "- No upcoming matches scheduled"
+
+        return f"""**{alert} — {stadium}**
+
+📊 **Situation Report** ({context.get('timestamp', 'N/A')})
+- Overall crowd density: {density}%
+- Active staff on site: {staff}
+- Active volunteers: {volunteers}
+- Weather: {context.get('weather', 'N/A')}
+
+🎯 **Priority Actions:**
+1. {action}
+2. Ensure all accessibility routes remain clear and operational
+3. Monitor sustainability stations — recycling compliance at standard levels
+4. Coordinate with transport team for post-match fan dispersal planning
+
+📋 **Upcoming at this venue:**
+{upcoming_text}"""

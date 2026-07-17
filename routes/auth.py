@@ -4,17 +4,27 @@ Sign in with Google for personalized experience
 """
 
 import json
+import logging
 import urllib.parse
 import urllib.request
 
 from flask import Blueprint, current_app, jsonify, redirect, request, session
+
+logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/auth/login")
 def login():
-    """Initiate Google OAuth flow."""
+    """Initiate Google OAuth flow.
+
+    Redirects the user to Google's OAuth consent screen. Requires
+    ``GOOGLE_OAUTH_CLIENT_ID`` to be set in the application config.
+
+    Returns:
+        Redirect to Google OAuth URL, or JSON error if not configured.
+    """
     client_id = current_app.config.get("GOOGLE_OAUTH_CLIENT_ID", "")
     if not client_id:
         return jsonify({"error": "Google OAuth not configured", "message": "Set GOOGLE_OAUTH_CLIENT_ID in .env"}), 400
@@ -36,7 +46,14 @@ def login():
 
 @auth_bp.route("/auth/callback")
 def callback():
-    """Handle Google OAuth callback."""
+    """Handle Google OAuth callback.
+
+    Exchanges the authorization code for tokens, fetches user info,
+    and stores it in the session.
+
+    Returns:
+        Redirect to the home page on success, or with an error parameter on failure.
+    """
     code = request.args.get("code")
     if not code:
         return redirect("/?auth_error=no_code")
@@ -82,13 +99,13 @@ def callback():
         return redirect("/")
 
     except Exception as e:
-        print(f"[WARN] OAuth error: {e}")
+        logger.warning("OAuth error: %s", e)
         return redirect("/?auth_error=token_exchange")
 
 
 @auth_bp.route("/auth/logout")
 def logout():
-    """Log out user."""
+    """Log out user by clearing session data."""
     session.pop("user", None)
     session.pop("logged_in", None)
     return redirect("/")
@@ -96,7 +113,11 @@ def logout():
 
 @auth_bp.route("/auth/status")
 def auth_status():
-    """Get current auth status."""
+    """Get current authentication status.
+
+    Returns:
+        JSON with ``logged_in`` boolean and user profile data if authenticated.
+    """
     if session.get("logged_in"):
         return jsonify(
             {

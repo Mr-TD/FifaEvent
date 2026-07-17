@@ -3,25 +3,19 @@ StadiumIQ — Main Routes
 Home page and general navigation
 """
 
-import json
-import os
-
 from flask import Blueprint, render_template
 
-main_bp = Blueprint("main", __name__)
+from utils import load_json
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static", "data")
+main_bp = Blueprint("main", __name__)
 
 
 @main_bp.route("/")
 def index():
-    """Landing page."""
-    # Load stats for the hero section
+    """Landing page with hero stats and upcoming match ticker."""
     try:
-        with open(os.path.join(DATA_DIR, "stadiums.json"), "r", encoding="utf-8") as f:
-            stadiums = json.load(f)
-        with open(os.path.join(DATA_DIR, "schedule.json"), "r", encoding="utf-8") as f:
-            matches = json.load(f)
+        stadiums = load_json("stadiums.json")
+        matches = load_json("schedule.json")
     except Exception:
         stadiums = []
         matches = []

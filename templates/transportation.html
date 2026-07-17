@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Transportation{% endblock %}
+{% block content %}
+<section class="section" aria-labelledby="transport-heading">
+    <div class="container">
+        <div class="section-header fade-in">
+            <h1 id="transport-heading" class="section-title">
+                <i data-lucide="car" style="width:32px;height:32px;display:inline-block;vertical-align:middle"></i>
+                Transportation Hub
+            </h1>
+            <p class="section-subtitle">AI-powered transit recommendations for FIFA World Cup 2026 venues</p>
+        </div>
+
+        <!-- Stadium Selector -->
+        <div class="card glass-card fade-in" style="margin-bottom:2rem;padding:1.5rem">
+            <label for="transport-stadium-select" style="color:#94a3b8;font-weight:600;margin-bottom:0.5rem;display:block">
+                Select Venue
+            </label>
+            <select id="transport-stadium-select" class="form-select" aria-label="Select a stadium for transit info"
+                    onchange="loadTransitOptions()" style="width:100%;padding:12px;border-radius:10px;background:#1a1f3a;color:white;border:1px solid rgba(124,58,237,0.3);font-size:1rem">
+                {% for stadium in stadiums %}
+                <option value="{{ stadium.id }}">{{ stadium.name }} — {{ stadium.city }}, {{ stadium.country }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Transit Options Grid -->
+        <div id="transit-options" class="grid-2 fade-in" style="gap:1.5rem;margin-bottom:2rem">
+            <div class="card glass-card" style="padding:1.5rem">
+                <h3 style="color:#7c3aed;margin-bottom:0.5rem">
+                    <i data-lucide="train-front" style="width:20px;height:20px;display:inline-block;vertical-align:middle"></i>
+                    Metro / Rail
+                </h3>
+                <p id="transit-metro" style="color:#cbd5e1">Loading...</p>
+            </div>
+            <div class="card glass-card" style="padding:1.5rem">
+                <h3 style="color:#06d6a0;margin-bottom:0.5rem">
+                    <i data-lucide="bus" style="width:20px;height:20px;display:inline-block;vertical-align:middle"></i>
+                    Bus / Shuttle
+                </h3>
+                <p id="transit-bus" style="color:#cbd5e1">Loading...</p>
+            </div>
+            <div class="card glass-card" style="padding:1.5rem">
+                <h3 style="color:#d4af37;margin-bottom:0.5rem">
+                    <i data-lucide="car" style="width:20px;height:20px;display:inline-block;vertical-align:middle"></i>
+                    Rideshare
+                </h3>
+                <p id="transit-rideshare" style="color:#cbd5e1">Loading...</p>
+            </div>
+            <div class="card glass-card" style="padding:1.5rem">
+                <h3 style="color:#f72585;margin-bottom:0.5rem">
+                    <i data-lucide="circle-parking" style="width:20px;height:20px;display:inline-block;vertical-align:middle"></i>
+                    Parking
+                </h3>
+                <p id="transit-parking" style="color:#cbd5e1">Loading...</p>
+            </div>
+        </div>
+
+        <!-- AI Recommendation -->
+        <div class="card glass-card fade-in" style="padding:1.5rem;margin-bottom:2rem">
+            <h2 style="color:#06d6a0;margin-bottom:1rem">
+                <i data-lucide="sparkles" style="width:20px;height:20px;display:inline-block;vertical-align:middle"></i>
+                AI Transit Recommendation
+            </h2>
+            <div class="grid-3" style="gap:1rem;margin-bottom:1rem">
+                <div>
+                    <label for="time-select" style="color:#94a3b8;font-size:0.9rem">Time of Day</label>
+                    <select id="time-select" class="form-select" style="width:100%;padding:10px;border-radius:8px;background:#1a1f3a;color:white;border:1px solid rgba(124,58,237,0.3);margin-top:4px">
+                        <option value="morning">Morning (before noon)</option>
+                        <option value="afternoon" selected>Afternoon</option>
+                        <option value="evening">Evening</option>
+                        <option value="post-match">Post-Match</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pref-select" style="color:#94a3b8;font-size:0.9rem">Priority</label>
+                    <select id="pref-select" class="form-select" style="width:100%;padding:10px;border-radius:8px;background:#1a1f3a;color:white;border:1px solid rgba(124,58,237,0.3);margin-top:4px">
+                        <option value="fastest">⚡ Fastest</option>
+                        <option value="cheapest">💰 Cheapest</option>
+                        <option value="eco-friendly">🌱 Eco-Friendly</option>
+                        <option value="balanced" selected>⚖️ Balanced</option>
+                    </select>
+                </div>
+                <div style="display:flex;align-items:flex-end">
+                    <button onclick="getAIRecommendation()" class="btn-primary" style="width:100%;padding:10px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#06d6a0);color:white;border:none;font-weight:600;cursor:pointer">
+                        Get Recommendation
+                    </button>
+                </div>
+            </div>
+            <div id="ai-recommendation" style="color:#e2e8f0;background:rgba(124,58,237,0.1);padding:1rem;border-radius:10px;border-left:3px solid #7c3aed;min-height:60px">
+                Click "Get Recommendation" for a personalized transit plan.
+            </div>
+        </div>
+
+        <!-- Eco Impact -->
+        <div class="card glass-card fade-in" style="padding:1.5rem;text-align:center">
+            <div id="eco-tip" style="color:#06d6a0;font-size:1.1rem;font-weight:500">
+                🌱 Public transit saves ~4.5 kg CO₂ per trip compared to driving alone.
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function loadTransitOptions() {
+        const stadiumId = document.getElementById('transport-stadium-select').value;
+        try {
+            const res = await fetch(`/api/transportation/options?stadium_id=${stadiumId}`);
+            const data = await res.json();
+            document.getElementById('transit-metro').textContent = data.options.metro;
+            document.getElementById('transit-bus').textContent = data.options.bus;
+            document.getElementById('transit-rideshare').textContent = data.options.rideshare;
+            document.getElementById('transit-parking').textContent = data.options.parking;
+            document.getElementById('eco-tip').textContent = data.eco_recommendation;
+            lucide.createIcons();
+        } catch (err) {
+            console.error('Failed to load transit options:', err);
+        }
+    }
+
+    async function getAIRecommendation() {
+        const stadiumId = document.getElementById('transport-stadium-select').value;
+        const timeOfDay = document.getElementById('time-select').value;
+        const preference = document.getElementById('pref-select').value;
+        const recDiv = document.getElementById('ai-recommendation');
+
+        recDiv.innerHTML = '<em style="color:#94a3b8">Generating recommendation...</em>';
+
+        try {
+            const res = await fetch('/api/transportation/recommend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    stadium_id: parseInt(stadiumId),
+                    time_of_day: timeOfDay,
+                    preference: preference
+                })
+            });
+            const data = await res.json();
+            recDiv.innerHTML = data.recommendation
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+        } catch (err) {
+            recDiv.textContent = 'Unable to generate recommendation. Please try again.';
+        }
+    }
+
+    // Load on page ready
+    document.addEventListener('DOMContentLoaded', loadTransitOptions);
+</script>
+{% endblock %}

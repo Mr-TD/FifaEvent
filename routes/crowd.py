@@ -1,30 +1,31 @@
 """
 StadiumIQ — Crowd Intelligence Routes
-Real-time crowd density and AI recommendations
+Real-time crowd density monitoring and AI-powered recommendations.
 """
 
-import json
-import os
 import random
-from datetime import datetime
+from datetime import UTC, datetime
 
-from flask import Blueprint, current_app, jsonify, render_template
+from flask import Blueprint, current_app, jsonify, render_template, request
+
+from models import AlertLevel
+from utils import load_json
 
 crowd_bp = Blueprint("crowd", __name__)
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static", "data")
 
+def generate_crowd_data(stadium_id: int = 1) -> dict:
+    """Generate simulated crowd density data for a stadium.
 
-def load_json(filename):
-    try:
-        with open(os.path.join(DATA_DIR, filename), "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return []
+    Produces per-zone density readings and an aggregate summary.
+    In production, this would connect to real IoT sensor data.
 
+    Args:
+        stadium_id: The ID of the stadium to generate data for.
 
-def generate_crowd_data(stadium_id=1):
-    """Generate simulated crowd density data."""
+    Returns:
+        Dictionary with zone-level densities, overall metrics, and timestamp.
+    """
     zones = [
         {"zone": "North Stand", "color": "#7c3aed"},
         {"zone": "South Stand", "color": "#06d6a0"},
@@ -41,7 +42,12 @@ def generate_crowd_data(stadium_id=1):
     for zone in zones:
         zone["density"] = random.randint(25, 95)
         zone["people_count"] = random.randint(500, 8000)
-        zone["alert_level"] = "critical" if zone["density"] > 85 else ("warning" if zone["density"] > 70 else "normal")
+        if zone["density"] > 85:
+            zone["alert_level"] = AlertLevel.CRITICAL
+        elif zone["density"] > 70:
+            zone["alert_level"] = AlertLevel.WARNING
+        else:
+            zone["alert_level"] = AlertLevel.NORMAL
 
     overall = sum(z["density"] for z in zones) // len(zones)
 
@@ -50,7 +56,7 @@ def generate_crowd_data(stadium_id=1):
         "zones": zones,
         "overall_density": overall,
         "total_people": sum(z["people_count"] for z in zones),
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 
@@ -63,9 +69,14 @@ def crowd_page():
 
 @crowd_bp.route("/api/crowd/data")
 def crowd_data():
-    """Get current crowd density data."""
-    from flask import request
+    """Get current crowd density data for a stadium.
 
+    Query Parameters:
+        stadium_id (int): ID of the stadium. Defaults to 1.
+
+    Returns:
+        JSON with zone-level and aggregate crowd metrics.
+    """
     stadium_id = request.args.get("stadium_id", 1, type=int)
     data = generate_crowd_data(stadium_id)
 
@@ -78,9 +89,14 @@ def crowd_data():
 
 @crowd_bp.route("/api/crowd/recommendations")
 def crowd_recommendations():
-    """Get AI-generated crowd management recommendations."""
-    from flask import request
+    """Get AI-generated crowd management recommendations.
 
+    Query Parameters:
+        stadium_id (int): ID of the stadium. Defaults to 1.
+
+    Returns:
+        JSON with AI recommendation and underlying crowd data.
+    """
     stadium_id = request.args.get("stadium_id", 1, type=int)
     data = generate_crowd_data(stadium_id)
 
@@ -104,7 +120,12 @@ def crowd_recommendations():
 
 @crowd_bp.route("/api/crowd/history")
 def crowd_history():
-    """Get historical crowd data for charts (simulated)."""
+    """Get historical crowd data for charts (simulated).
+
+    Returns:
+        JSON with 24 hourly density data points simulating a realistic
+        match-day crowd pattern.
+    """
     hours = []
     for h in range(24):
         # Simulate a realistic crowd pattern — builds before match, peaks, then drops

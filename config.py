@@ -17,7 +17,7 @@ class Config:
 
     # Generate a secure random key if none is provided in the environment
     SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(32))
-    
+
     # Session Cookie Security
     SESSION_COOKIE_SECURE = os.environ.get("FLASK_DEBUG", "True").lower() not in ("true", "1", "yes")
     SESSION_COOKIE_HTTPONLY = True
@@ -25,7 +25,7 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///stadium_iq.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
+
     # Caching
     CACHE_TYPE = "SimpleCache"
     CACHE_DEFAULT_TIMEOUT = 300

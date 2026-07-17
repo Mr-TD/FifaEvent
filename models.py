@@ -1,14 +1,43 @@
 """
 StadiumIQ Database Models
 FIFA World Cup 2026
+
+Defines the SQLAlchemy ORM models for stadiums, matches, points of interest,
+crowd snapshots, chat history, and sustainability action logs.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Dict
 
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
+
+# ─── Constants / Enums ─────────────────────────────────────────────
+
+
+class MatchStatus:
+    """Valid match status values."""
+
+    SCHEDULED = "scheduled"
+    LIVE = "live"
+    COMPLETED = "completed"
+
+    ALL = {SCHEDULED, LIVE, COMPLETED}
+
+
+class AlertLevel:
+    """Crowd density alert level thresholds."""
+
+    NORMAL = "normal"
+    WARNING = "warning"
+    CRITICAL = "critical"
+
+    ALL = {NORMAL, WARNING, CRITICAL}
+
+
+# ─── Models ────────────────────────────────────────────────────────
 
 
 class Stadium(db.Model):
@@ -30,6 +59,9 @@ class Stadium(db.Model):
     matches = db.relationship("Match", backref="stadium", lazy=True)
     pois = db.relationship("PointOfInterest", backref="stadium", lazy=True)
     crowd_snapshots = db.relationship("CrowdSnapshot", backref="stadium", lazy=True)
+
+    def __repr__(self) -> str:
+        return f"<Stadium {self.id}: {self.name} ({self.city})>"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -61,7 +93,10 @@ class Match(db.Model):
     group_name = db.Column(db.String(20), default="")
     score_a = db.Column(db.Integer, default=None, nullable=True)
     score_b = db.Column(db.Integer, default=None, nullable=True)
-    status = db.Column(db.String(20), default="scheduled", index=True)  # scheduled, live, completed
+    status = db.Column(db.String(20), default=MatchStatus.SCHEDULED, index=True)
+
+    def __repr__(self) -> str:
+        return f"<Match {self.id}: {self.team_a} vs {self.team_b} ({self.stage})>"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -82,7 +117,7 @@ class Match(db.Model):
 
 
 class PointOfInterest(db.Model):
-    """Point of interest within a stadium."""
+    """Point of interest within a stadium (food, restrooms, exits, etc.)."""
 
     __tablename__ = "points_of_interest"
 
@@ -96,6 +131,9 @@ class PointOfInterest(db.Model):
     floor = db.Column(db.String(20), default="Ground")
     is_accessible = db.Column(db.Boolean, default=True)
     icon = db.Column(db.String(50), default="map-pin")
+
+    def __repr__(self) -> str:
+        return f"<POI {self.id}: {self.name} ({self.category})>"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -113,17 +151,20 @@ class PointOfInterest(db.Model):
 
 
 class CrowdSnapshot(db.Model):
-    """Real-time crowd density snapshot."""
+    """Real-time crowd density snapshot for a specific stadium zone."""
 
     __tablename__ = "crowd_snapshots"
 
     id = db.Column(db.Integer, primary_key=True)
     stadium_id = db.Column(db.Integer, db.ForeignKey("stadiums.id"), nullable=False, index=True)
-    zone = db.Column(db.String(50), nullable=False)  # North Stand, South Stand, East Gate, etc.
+    zone = db.Column(db.String(50), nullable=False)  # North Stand, South Stand, etc.
     density_level = db.Column(db.Integer, nullable=False)  # 0-100 percentage
     people_count = db.Column(db.Integer, default=0)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
-    alert_level = db.Column(db.String(20), default="normal")  # normal, warning, critical
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(UTC), index=True)
+    alert_level = db.Column(db.String(20), default=AlertLevel.NORMAL)
+
+    def __repr__(self) -> str:
+        return f"<CrowdSnapshot {self.zone}: {self.density_level}% ({self.alert_level})>"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -138,7 +179,7 @@ class CrowdSnapshot(db.Model):
 
 
 class ChatHistory(db.Model):
-    """AI chatbot conversation history."""
+    """AI chatbot conversation history entry."""
 
     __tablename__ = "chat_history"
 
@@ -147,7 +188,10 @@ class ChatHistory(db.Model):
     user_message = db.Column(db.Text, nullable=False)
     ai_response = db.Column(db.Text, nullable=False)
     language = db.Column(db.String(10), default="en")
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
+
+    def __repr__(self) -> str:
+        return f"<ChatHistory {self.id}: session={self.session_id}>"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -161,7 +205,7 @@ class ChatHistory(db.Model):
 
 
 class SustainabilityAction(db.Model):
-    """User sustainability action log."""
+    """User sustainability action log entry."""
 
     __tablename__ = "sustainability_actions"
 
@@ -171,7 +215,10 @@ class SustainabilityAction(db.Model):
     description = db.Column(db.Text, default="")
     impact_score = db.Column(db.Float, default=0.0)
     carbon_saved_kg = db.Column(db.Float, default=0.0)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
+
+    def __repr__(self) -> str:
+        return f"<SustainabilityAction {self.id}: {self.action_type} (saved {self.carbon_saved_kg}kg CO₂)>"
 
     def to_dict(self) -> Dict[str, Any]:
         return {

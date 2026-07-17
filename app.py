@@ -6,19 +6,16 @@ Powered by Google Cloud Services
 Run with: python app.py
 """
 
-import json
 import logging
-import os
-from typing import Any
 
-from flask import Flask
+from flask import Flask, render_template
 from flask_caching import Cache
 from flask_socketio import SocketIO
 from flask_wtf.csrf import CSRFProtect
 
 from ai_engine import StadiumAI
 from config import config_by_name
-from models import Match, PointOfInterest, Stadium, db
+from models import db
 
 # Initialize extensions
 socketio = SocketIO()
@@ -29,8 +26,16 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def create_app(config_name="default"):
-    """Application factory."""
+def create_app(config_name: str = "default") -> Flask:
+    """Application factory — creates and configures the Flask app.
+
+    Args:
+        config_name: Configuration profile to use. One of
+                     ``development``, ``production``, ``testing``, or ``default``.
+
+    Returns:
+        Fully configured Flask application instance.
+    """
     app = Flask(__name__)
     app.config.from_object(config_by_name.get(config_name, config_by_name["default"]))
 
@@ -51,23 +56,12 @@ def create_app(config_name="default"):
         logger.warning("Running in DEMO mode (no Gemini API key). Set GEMINI_API_KEY in .env for full AI.")
 
     # Report Google services status
-    google_services = []
-    if app.config.get("GEMINI_API_KEY"):
-        google_services.append("Gemini AI")
-    if app.config.get("GOOGLE_MAPS_API_KEY"):
-        google_services.append("Google Maps")
-    if app.config.get("GOOGLE_ANALYTICS_ID"):
-        google_services.append("Google Analytics")
-    if app.config.get("GOOGLE_OAUTH_CLIENT_ID"):
-        google_services.append("Google Sign-In")
-
-    google_services.extend(["Google Fonts", "Google Translate", "Google Charts", "Google Calendar Links"])
-
-    logger.info(f'Active Google services: {", ".join(google_services)}')
+    google_services = _detect_google_services(app)
+    logger.info("Active Google services: %s", ", ".join(google_services))
 
     # Make Google config available to all templates
     @app.context_processor
-    def inject_google_config():
+    def inject_google_config() -> dict:
         return {
             "GOOGLE_MAPS_API_KEY": app.config.get("GOOGLE_MAPS_API_KEY", ""),
             "GOOGLE_ANALYTICS_ID": app.config.get("GOOGLE_ANALYTICS_ID", ""),
@@ -76,14 +70,59 @@ def create_app(config_name="default"):
         }
 
     # Register blueprints
+    _register_blueprints(app)
+
+    # Create database tables and seed data
+    with app.app_context():
+        db.create_all()
+        from seed import seed_data
+
+        seed_data(app)
+
+    # Error handlers
+    _register_error_handlers(app)
+
+    return app
+
+
+def _detect_google_services(app: Flask) -> list:
+    """Detect which Google Cloud services are configured.
+
+    Args:
+        app: The Flask application instance.
+
+    Returns:
+        List of active Google service names.
+    """
+    services = []
+    if app.config.get("GEMINI_API_KEY"):
+        services.append("Gemini AI")
+    if app.config.get("GOOGLE_MAPS_API_KEY"):
+        services.append("Google Maps")
+    if app.config.get("GOOGLE_ANALYTICS_ID"):
+        services.append("Google Analytics")
+    if app.config.get("GOOGLE_OAUTH_CLIENT_ID"):
+        services.append("Google Sign-In")
+    services.extend(["Google Fonts", "Google Translate", "Google Charts", "Google Calendar Links"])
+    return services
+
+
+def _register_blueprints(app: Flask) -> None:
+    """Register all route blueprints with the application.
+
+    Args:
+        app: The Flask application instance.
+    """
     from routes.accessibility import accessibility_bp
     from routes.auth import auth_bp
     from routes.chatbot import chatbot_bp
     from routes.crowd import crowd_bp
     from routes.main import main_bp
+    from routes.ops_intelligence import ops_bp
     from routes.schedule import schedule_bp
     from routes.stadium import stadium_bp
     from routes.sustainability import sustainability_bp
+    from routes.transportation import transportation_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(chatbot_bp)
@@ -93,147 +132,32 @@ def create_app(config_name="default"):
     app.register_blueprint(accessibility_bp)
     app.register_blueprint(sustainability_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(transportation_bp)
+    app.register_blueprint(ops_bp)
 
-    # Exempt API routes from CSRF since they are stateless and we didn't add CSRF tokens to fetch calls
+    # Exempt stateless API routes from CSRF
     csrf.exempt(chatbot_bp)
     csrf.exempt(stadium_bp)
     csrf.exempt(schedule_bp)
     csrf.exempt(crowd_bp)
+    csrf.exempt(transportation_bp)
+    csrf.exempt(ops_bp)
 
-    # Create database tables and seed data
-    with app.app_context():
-        db.create_all()
-        seed_data(app)
 
-    # Error handlers
+def _register_error_handlers(app: Flask) -> None:
+    """Register custom error page handlers.
+
+    Args:
+        app: The Flask application instance.
+    """
+
     @app.errorhandler(404)
     def not_found(e):
-        return (
-            """
-        <html>
-        <head><title>404 - StadiumIQ</title>
-        <link rel="stylesheet" href="/static/css/style.css"></head>
-        <body style="display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center">
-        <div class="bg-mesh"></div>
-        <div style="position:relative;z-index:1">
-            <h1 style="font-family:Outfit,sans-serif;font-size:6rem;background:linear-gradient(135deg,#7c3aed,#06d6a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent">404</h1>
-            <p style="color:#94a3b8;font-size:1.2rem">Looks like you wandered off the pitch!</p>
-            <a href="/" style="margin-top:20px;display:inline-flex;padding:12px 28px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#06d6a0);color:white;text-decoration:none;font-weight:600">Back to Stadium</a>
-        </div>
-        </body></html>
-        """,
-            404,
-        )
+        return render_template("errors/404.html"), 404
 
     @app.errorhandler(500)
     def server_error(e):
-        return (
-            """
-        <html>
-        <head><title>500 - StadiumIQ</title>
-        <link rel="stylesheet" href="/static/css/style.css"></head>
-        <body style="display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center">
-        <div class="bg-mesh"></div>
-        <div style="position:relative;z-index:1">
-            <h1 style="font-family:Outfit,sans-serif;font-size:4rem;color:#f72585">VAR Review!</h1>
-            <p style="color:#94a3b8;font-size:1.2rem">Something went wrong. Our team is reviewing the play.</p>
-            <a href="/" style="margin-top:20px;display:inline-flex;padding:12px 28px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#06d6a0);color:white;text-decoration:none;font-weight:600">Back to Stadium</a>
-        </div>
-        </body></html>
-        """,
-            500,
-        )
-
-    return app
-
-
-def seed_data(app):
-    """Seed database with stadium and match data from JSON files."""
-    if Stadium.query.first():
-        return
-
-    data_dir = os.path.join(app.root_path, "static", "data")
-
-    # Seed stadiums
-    try:
-        with open(os.path.join(data_dir, "stadiums.json"), "r", encoding="utf-8") as f:
-            stadiums = json.load(f)
-        for s in stadiums:
-            db.session.add(
-                Stadium(
-                    id=s["id"],
-                    name=s["name"],
-                    city=s["city"],
-                    country=s["country"],
-                    capacity=s["capacity"],
-                    latitude=s["latitude"],
-                    longitude=s["longitude"],
-                    description=s.get("description", ""),
-                )
-            )
-        db.session.commit()
-        logger.info(f"Seeded {len(stadiums)} stadiums")
-    except Exception as e:
-        db.session.rollback()
-        logger.warning(f"Stadium seed error: {e}")
-
-    # Seed matches
-    try:
-        with open(os.path.join(data_dir, "schedule.json"), "r", encoding="utf-8") as f:
-            matches = json.load(f)
-        from datetime import datetime
-
-        for m in matches:
-            db.session.add(
-                Match(
-                    id=m["id"],
-                    team_a=m["team_a"],
-                    team_b=m["team_b"],
-                    team_a_flag=m.get("team_a_flag", ""),
-                    team_b_flag=m.get("team_b_flag", ""),
-                    match_date=datetime.fromisoformat(m["match_date"]),
-                    stadium_id=m["stadium_id"],
-                    stage=m["stage"],
-                    group_name=m.get("group_name", ""),
-                    score_a=m.get("score_a"),
-                    score_b=m.get("score_b"),
-                    status=m.get("status", "scheduled"),
-                )
-            )
-        db.session.commit()
-        logger.info(f"Seeded {len(matches)} matches")
-    except Exception as e:
-        db.session.rollback()
-        logger.warning(f"Match seed error: {e}")
-
-    # Seed POIs
-    try:
-        with open(os.path.join(data_dir, "poi.json"), "r", encoding="utf-8") as f:
-            all_pois = json.load(f)
-        count = 0
-        for stadium_id, pois in all_pois.items():
-            if stadium_id == "default":
-                continue
-            for p in pois:
-                db.session.add(
-                    PointOfInterest(
-                        stadium_id=int(stadium_id),
-                        name=p["name"],
-                        category=p["category"],
-                        description=p.get("description", ""),
-                        latitude=p["latitude"],
-                        longitude=p["longitude"],
-                        floor=p.get("floor", "Ground"),
-                        is_accessible=p.get("is_accessible", True),
-                        icon=p.get("icon", "map-pin"),
-                    )
-                )
-                count += 1
-        db.session.commit()
-        logger.info(f"Seeded {count} points of interest")
-    except Exception as e:
-        db.session.rollback()
-        logger.warning(f"POI seed error: {e}")
+        return render_template("errors/500.html"), 500
 
 
 if __name__ == "__main__":
